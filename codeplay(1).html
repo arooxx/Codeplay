@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodePlay - Coding Gamified</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --blue:#1565C0;--blue-light:#1976D2;--blue-dark:#0D47A1;
+  --orange:#F57C00;--orange-light:#FF9800;
+  --bg:#F4F6FB;--white:#fff;--sidebar-w:210px;
+  --text:#1A1A2E;--text2:#5A6475;--text3:#8B93A7;
+  --border:#E2E8F0;--card:#fff;
+  --green:#2E7D32;--red:#C62828;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+
+/* ─── SIDEBAR ─── */
+.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;}
+.logo{padding:14px 16px;display:flex;align-items:center;border-bottom:1px solid var(--border);cursor:pointer;}
+.logo-text{display:flex;flex-direction:column;line-height:1.15;}
+.logo-text .lt1{font-size:16px;font-weight:800;letter-spacing:-.3px;}
+.logo-text .lt1 .code-part{color:#2E9BD6;font-style:normal;}
+.logo-text .lt1 .play-part{color:#4A5568;font-style:normal;}
+.logo-text .lt2{font-size:10px;color:#8B93A7;font-weight:400;letter-spacing:.2px;}
+nav{flex:1;padding:10px 8px;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;transition:all .15s;font-size:13.5px;font-weight:500;color:var(--text2);border-radius:var(--radius-sm);margin-bottom:2px;}
+.nav-item:hover{background:#F0F4FF;color:var(--blue);}
+.nav-item.active{background:var(--blue);color:#fff;}
+.nav-item svg{width:17px;height:17px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sidebar-promo{margin:10px;background:linear-gradient(135deg,#FFF3E0,#FFF8E1);border:1px solid #FFE0B2;border-radius:var(--radius);padding:14px;text-align:center;}
+.sidebar-promo .trophy{font-size:30px;margin-bottom:6px;}
+.sidebar-promo h4{font-size:12px;font-weight:700;color:#E65100;margin-bottom:3px;}
+.sidebar-promo p{font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.4;}
+.btn-upgrade{background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;width:100%;font-family:inherit;transition:background .15s;}
+.btn-upgrade:hover{background:var(--blue-light);}
+
+/* ─── TOPBAR ─── */
+.topbar{height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:14px;position:fixed;left:var(--sidebar-w);right:0;top:0;z-index:99;}
+.topbar-title{font-size:15px;font-weight:600;color:var(--text);flex:1;}
+.stat-badge{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:600;}
+.stat-fire{background:#FFF3E0;color:#E65100;}
+.stat-xp{background:#FFF8E1;color:#F57C00;}
+.notif-btn{width:36px;height:36px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all .15s;}
+.notif-btn:hover{background:#E3F2FD;border-color:var(--blue);}
+.notif-dot{width:8px;height:8px;background:var(--red);border-radius:50%;position:absolute;top:6px;right:6px;}
+.user-badge{display:flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;border-radius:20px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .15s;}
+.user-badge:hover{border-color:var(--blue);}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),#42A5F5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;}
+.user-info .name{font-size:12px;font-weight:600;color:var(--text);}
+.user-info .level{font-size:10px;color:var(--text3);}
+
+/* ─── MAIN ─── */
+.main{margin-left:var(--sidebar-w);margin-top:60px;flex:1;padding:24px;min-height:calc(100vh - 60px);}
+.page{display:none;}.page.active{display:block;}
+
+/* ─── HERO ─── */
+.hero{background:linear-gradient(135deg,#1565C0 0%,#1976D2 60%,#0D47A1 100%);border-radius:var(--radius);padding:28px 32px;color:#fff;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;position:relative;overflow:hidden;}
+.hero-text h2{font-size:26px;font-weight:800;margin-bottom:8px;line-height:1.2;}
+.hero-text p{font-size:13px;opacity:.85;max-width:320px;line-height:1.5;}
+.hero-code{background:rgba(255,255,255,.13);border-radius:10px;padding:14px 18px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#E3F2FD;line-height:1.8;}
+
+/* ─── CARDS ─── */
+.card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:20px;}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;}
+.card-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.card-title-row span:first-child{font-size:14px;font-weight:700;color:var(--text);}
+.see-all{font-size:12px;color:var(--blue);cursor:pointer;font-weight:600;}
+.see-all:hover{text-decoration:underline;}
+.dash-grid{display:grid;grid-template-columns:1fr 280px;gap:20px;}
+.dash-main{display:flex;flex-direction:column;gap:20px;}
+.dash-side{display:flex;flex-direction:column;gap:16px;}
+
+/* ─── PROGRESS BELAJAR ─── */
+.progress-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.progress-item{background:#F8FAFF;border-radius:var(--radius-sm);padding:14px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s;}
+.progress-item:hover{border-color:var(--blue);}
+.progress-item-top{display:flex;align-items:center;gap:10px;}
+.lang-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;}
+.progress-info h4{font-size:13px;font-weight:700;color:var(--text);}
+.progress-info p{font-size:11px;color:var(--text3);}
+.progress-bar-wrap{display:flex;align-items:center;gap:8px;}
+.progress-bar{flex:1;height:6px;background:#E2E8F0;border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(to right,var(--blue),#42A5F5);transition:width .6s ease;}
+.progress-pct{font-size:11px;font-weight:700;color:var(--text2);}
+
+/* ─── LANJUTKAN BELAJAR ─── */
+.content-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.content-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;cursor:pointer;transition:all .2s;}
+.content-card:hover{border-color:var(--blue);box-shadow:0 4px 14px rgba(21,101,192,.13);transform:translateY(-1px);}
+.content-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-bottom:10px;}
+.tag-lc{background:#E3F2FD;color:#1565C0;}
+.tag-quiz{background:#E8F5E9;color:#2E7D32;}
+.tag-ch{background:#FFF3E0;color:#E65100;}
+.tag-js{background:#FFF9C4;color:#F57F17;}
+.content-card h4{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3;}
+.content-card p{font-size:11px;color:var(--text3);margin-bottom:10px;line-height:1.4;}
+.content-meta{display:flex;align-items:center;justify-content:space-between;}
+.meta-info{font-size:10px;color:var(--text3);}
+.play-btn{width:24px;height:24px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+/* ─── LEVEL TRACK ─── */
+.level-track{display:flex;align-items:center;margin-top:4px;}
+.level-node{background:#fff;border:2px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;text-align:center;min-width:140px;}
+.level-node.done{border-color:#2E7D32;background:#E8F5E9;}
+.level-node.active{border-color:var(--blue);background:#E3F2FD;}
+.level-node.locked{opacity:.6;}
+.level-node h4{font-size:11px;font-weight:700;color:var(--text);margin-top:4px;}
+.level-node p{font-size:10px;color:var(--text3);}
+.level-connector{flex:1;height:2px;background:var(--border);}
+.level-connector.done{background:#2E7D32;}
+.check-icon{width:20px;height:20px;background:#2E7D32;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 4px;}
+.lock-icon{width:20px;height:20px;background:var(--text3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 4px;}
+.level-prog-bar{height:4px;background:#E2E8F0;border-radius:2px;overflow:hidden;margin-top:4px;}
+.level-prog-fill{height:100%;background:var(--blue);border-radius:2px;}
+.level-prog-txt{font-size:10px;color:var(--blue);font-weight:600;}
+
+/* ─── SUMMARY / SIDEBAR ─── */
+.summary-stat{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.summary-stat:last-child{border-bottom:none;}
+.stat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.stat-text h4{font-size:15px;font-weight:700;color:var(--text);}
+.stat-text p{font-size:11px;color:var(--text3);}
+.level-badge{background:#E3F2FD;color:var(--blue);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:4px;}
+.level-bar{height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden;}
+.level-fill{height:100%;background:linear-gradient(to right,var(--blue),#42A5F5);border-radius:4px;}
+
+/* ─── CALENDAR ─── */
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.cal-header h4{font-size:12px;font-weight:700;color:var(--text);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;}
+.cal-day-name{font-size:10px;color:var(--text3);font-weight:600;padding:2px;}
+.cal-day{font-size:11px;padding:4px 2px;border-radius:4px;cursor:pointer;transition:all .1s;}
+.cal-day:hover{background:#F0F4FF;}
+.cal-day.other{color:var(--text3);}
+.cal-day.today{background:var(--blue);color:#fff;font-weight:700;}
+.cal-day.active{background:#FFF3E0;color:var(--orange);font-weight:600;}
+.cal-day.streak{background:#E8F5E9;color:#2E7D32;font-weight:600;}
+
+/* ─── ACHIEVEMENTS ─── */
+.achievement-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.achievement-item:last-child{border-bottom:none;}
+.ach-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ach-text h5{font-size:12px;font-weight:700;color:var(--text);}
+.ach-text p{font-size:10px;color:var(--text3);}
+.ach-xp{font-size:12px;font-weight:700;color:#2E7D32;margin-left:auto;flex-shrink:0;}
+
+/* ─── BELAJAR ─── */
+.learn-container{display:grid;grid-template-columns:1fr 260px;gap:20px;}
+.learn-content{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:32px;}
+.breadcrumb{font-size:12px;color:var(--text3);margin-bottom:20px;}
+.breadcrumb span{color:var(--blue);font-weight:500;}
+.learn-title{font-size:24px;font-weight:800;color:var(--text);margin-bottom:16px;}
+.learn-body{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:20px;}
+.code-block{background:#1E1E2E;border-radius:var(--radius-sm);padding:20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;margin:20px 0;}
+.explain-section h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;}
+.explain-section p{font-size:13.5px;color:var(--text2);line-height:1.7;}
+.learn-nav{display:flex;justify-content:space-between;align-items:center;margin-top:32px;padding-top:20px;border-top:1px solid var(--border);}
+.btn-nav{padding:10px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-prev{background:#fff;border:1px solid var(--border);color:var(--text2);}
+.btn-prev:hover{background:var(--bg);}
+.btn-next{background:var(--blue);color:#fff;border:none;}
+.btn-next:hover{background:var(--blue-light);}
+.dot-nav{display:flex;gap:6px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border);cursor:pointer;}
+.dot.active{background:var(--blue);}
+.materi-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;height:fit-content;}
+.materi-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;justify-content:space-between;}
+.materi-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--radius-sm);cursor:pointer;margin-bottom:2px;transition:all .1s;}
+.materi-item:hover{background:#F8FAFF;}
+.materi-item.active{background:#E3F2FD;}
+.materi-num{width:22px;height:22px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0;}
+.materi-item.active .materi-num{background:var(--blue);color:#fff;}
+.materi-item.done-m .materi-num{background:#2E7D32;color:#fff;}
+.materi-name{font-size:12px;color:var(--text2);}
+.materi-item.active .materi-name{color:var(--blue);font-weight:600;}
+
+/* ─── QUIZ ─── */
+.quiz-container{display:grid;grid-template-columns:1fr 260px;gap:20px;}
+.quiz-main{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:28px;}
+.quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.xp-badge{background:#FFF9C4;color:#F57F17;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.question{font-size:18px;font-weight:700;color:var(--text);margin-bottom:24px;line-height:1.4;}
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;display:flex;align-items:center;gap:12px;font-size:13.5px;color:var(--text2);transition:all .15s;}
+.option:hover{border-color:var(--blue);background:#F0F4FF;}
+.option.selected{border-color:var(--blue);background:#E3F2FD;color:var(--blue);}
+.option.correct{border-color:#2E7D32;background:#E8F5E9;color:#2E7D32;}
+.option.wrong{border-color:var(--red);background:#FFEBEE;color:var(--red);}
+.radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.option.selected .radio{border-color:var(--blue);background:var(--blue);}
+.option.correct .radio{border-color:#2E7D32;background:#2E7D32;}
+.option.wrong .radio{border-color:var(--red);background:var(--red);}
+.radio-dot{width:8px;height:8px;border-radius:50%;background:#fff;}
+.quiz-footer{display:flex;justify-content:space-between;align-items:center;margin-top:28px;}
+.quiz-feedback{padding:12px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;margin-top:16px;display:none;}
+.quiz-feedback.show{display:block;}
+.feedback-ok{background:#E8F5E9;color:#2E7D32;}
+.feedback-fail{background:#FFEBEE;color:var(--red);}
+.progress-quiz{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;height:fit-content;}
+.pq-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;justify-content:space-between;}
+.pq-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:16px;}
+.pq-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .4s ease;}
+.pq-list{display:flex;flex-direction:column;gap:2px;}
+.pq-item{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--text2);transition:all .1s;}
+.pq-item:hover{background:#F8FAFF;}
+.pq-item.active{background:#E3F2FD;color:var(--blue);font-weight:600;}
+.pq-item.done-ok{color:#2E7D32;}
+.pq-item.done-fail{color:var(--red);}
+.pq-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;}
+.pq-item.active .pq-dot{background:var(--blue);}
+.pq-item.done-ok .pq-dot{background:#2E7D32;}
+.pq-item.done-fail .pq-dot{background:var(--red);}
+
+/* ─── CHALLENGE ─── */
+.challenge-container{display:grid;grid-template-columns:1fr 280px;gap:16px;}
+.challenge-editor{background:#1A1A2E;border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:12px;min-height:480px;}
+.editor-header{display:flex;align-items:center;justify-content:space-between;}
+.editor-select{background:#2A2A4A;border:1px solid #3A3A5A;color:#E8EAF6;padding:4px 10px;border-radius:6px;font-size:12px;font-family:inherit;}
+.code-edit{background:#111122;border-radius:var(--radius-sm);padding:16px;flex:1;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.8;color:#E8EAF6;min-height:260px;border:none;resize:none;outline:none;width:100%;}
+.code-edit:focus{outline:1px solid #3A3A5A;}
+.editor-actions{display:flex;gap:8px;}
+.btn-reset{background:transparent;border:1px solid #3A3A5A;color:#9999BB;padding:8px 14px;border-radius:var(--radius-sm);font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-reset:hover{border-color:#6A6A9A;color:#E8EAF6;}
+.btn-run{background:#1565C0;border:none;color:#fff;padding:8px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-run:hover{background:#1976D2;}
+.btn-submit{background:#F57C00;border:none;color:#fff;padding:8px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-submit:hover{background:#FF9800;}
+.challenge-side{display:flex;flex-direction:column;gap:12px;}
+.test-card,.tips-card,.history-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.tc-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;justify-content:space-between;}
+.tc-status{font-size:11px;font-weight:600;color:#2E7D32;}
+.test-case{background:#F8FAFF;border-radius:var(--radius-sm);padding:10px;margin-bottom:8px;border:1px solid var(--border);}
+.test-case h5{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:6px;}
+.test-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:2px;}
+.test-row span:last-child{font-weight:600;}
+.test-status{font-size:11px;font-weight:700;margin-top:6px;}
+.status-pass{color:#2E7D32;}.status-fail{color:var(--red);}
+.tips-title,.history-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.tips-body{font-size:12px;color:var(--text2);line-height:1.5;}
+.history-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px;}
+.history-item:last-child{border-bottom:none;}
+.his-time{color:var(--text3);flex:1;}
+.his-status{font-weight:600;padding:2px 6px;border-radius:4px;font-size:10px;}
+.his-ok{background:#E8F5E9;color:#2E7D32;}.his-fail{background:#FFEBEE;color:#C62828;}
+.hint-link{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--blue);cursor:pointer;padding:10px 0 0;margin-top:6px;border-top:1px solid var(--border);}
+.hint-link:hover{text-decoration:underline;}
+.output-box{background:#0A0A1A;border-radius:var(--radius-sm);padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#50FA7B;min-height:40px;margin-top:4px;}
+
+/* ─── LEADERBOARD ─── */
+.lb-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.lb-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.lb-tab{padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
+.lb-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.lb-table{width:100%;border-collapse:collapse;}
+.lb-table th{text-align:left;font-size:12px;font-weight:600;color:var(--text3);padding:8px 12px;border-bottom:1px solid var(--border);}
+.lb-table td{padding:12px;border-bottom:1px solid var(--border);font-size:13px;}
+.lb-table tr:last-child td{border-bottom:none;}
+.lb-table tr.me td{background:#F0F4FF;}
+.rank-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.rank-1{background:#FFD700;color:#5D4037;}.rank-2{background:#C0C0C0;color:#424242;}.rank-3{background:#CD7F32;color:#fff;}.rank-n{background:var(--bg);color:var(--text3);}
+.lb-user{display:flex;align-items:center;gap:10px;}
+.lb-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;}
+.lb-name{font-size:13px;font-weight:600;color:var(--text);}
+.lb-name.me{color:var(--blue);}
+.lb-xp{font-size:13px;font-weight:700;color:var(--text);}
+.lb-note{font-size:11px;color:var(--text3);margin-top:16px;text-align:center;}
+
+/* ─── PENCAPAIAN ─── */
+.tab-row{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.tab-btn{padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+.ach-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.ach-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all .2s;cursor:pointer;}
+.ach-card:not(.locked):hover{border-color:var(--blue);box-shadow:0 2px 10px rgba(21,101,192,.1);}
+.ach-card.locked{opacity:.65;background:#FAFAFA;}
+.ach-icon-big{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.ach-card h4{font-size:11px;font-weight:700;color:var(--text);line-height:1.3;}
+.ach-card p{font-size:10px;color:var(--text3);line-height:1.3;}
+.ach-mini-bar{height:4px;background:#E2E8F0;border-radius:2px;width:100%;overflow:hidden;}
+.ach-mini-fill{height:100%;background:var(--blue);border-radius:2px;}
+.ach-count{font-size:10px;color:var(--text3);}
+.ach-section-title{font-size:13px;font-weight:700;color:var(--text);margin:20px 0 12px;}
+
+/* ─── TOKO ─── */
+.toko-balance{display:flex;align-items:center;gap:6px;background:#FFF8E1;border:1px solid #FFE0B2;border-radius:20px;padding:6px 14px;font-size:14px;font-weight:700;color:#F57C00;}
+.shop-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.shop-tab{padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
+.shop-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.shop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.shop-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;text-align:center;cursor:pointer;transition:all .2s;}
+.shop-item:hover{border-color:var(--blue);box-shadow:0 4px 14px rgba(21,101,192,.1);transform:translateY(-2px);}
+.shop-item-icon{font-size:36px;margin-bottom:10px;}
+.shop-item h4{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.shop-item p{font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.3;}
+.shop-price{background:#FFF8E1;color:#F57C00;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;display:inline-block;}
+.shop-item.owned .shop-price{background:#E8F5E9;color:#2E7D32;}
+.shop-note{font-size:11px;color:var(--text3);margin-top:16px;text-align:center;background:#F8FAFF;border-radius:var(--radius-sm);padding:10px;border:1px solid var(--border);}
+
+/* ─── PENGATURAN ─── */
+.settings-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.settings-tab{padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
+.settings-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.settings-content{display:none;}.settings-content.active{display:block;}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.settings-section h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.form-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13.5px;color:var(--text);font-family:inherit;background:#fff;outline:none;transition:border-color .15s;}
+.form-input:focus{border-color:var(--blue);}
+.form-input[readonly]{background:#F8FAFF;color:var(--text2);}
+.form-input::placeholder{color:var(--text3);}
+.form-input.editable{background:#fff;border-color:var(--blue);}
+.btn-save{background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:6px;transition:background .15s;}
+.btn-save:hover{background:var(--blue-light);}
+.btn-edit{background:#fff;border:1px solid var(--border);color:var(--text2);border-radius:var(--radius-sm);padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-edit:hover{border-color:var(--blue);color:var(--blue);}
+.btn-logout{background:#fff;border:1.5px solid #C62828;color:#C62828;border-radius:var(--radius-sm);padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-logout:hover{background:#FFEBEE;}
+.danger-section{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
+.danger-section h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.danger-section p{font-size:12px;color:var(--text3);margin-bottom:12px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info h5{font-size:13px;font-weight:600;color:var(--text);}
+.toggle-info p{font-size:11px;color:var(--text3);}
+.toggle{width:40px;height:22px;border-radius:11px;background:var(--border);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--blue);}
+.toggle-knob{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle.on .toggle-knob{left:20px;}
+.privacy-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.privacy-item:last-child{border-bottom:none;}
+.privacy-info h5{font-size:13px;font-weight:600;color:var(--text);}
+.privacy-info p{font-size:11px;color:var(--text3);}
+.btn-action{background:#fff;border:1px solid var(--border);color:var(--text2);border-radius:var(--radius-sm);padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-action:hover{border-color:var(--blue);color:var(--blue);}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.theme-item{border:2px solid var(--border);border-radius:var(--radius-sm);padding:12px;cursor:pointer;text-align:center;transition:all .15s;}
+.theme-item:hover{border-color:var(--blue);}
+.theme-item.active{border-color:var(--blue);background:#E3F2FD;}
+.theme-preview{height:50px;border-radius:6px;margin-bottom:8px;}
+.theme-name{font-size:12px;font-weight:600;color:var(--text);}
+
+/* ─── MODAL OVERLAY ─── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:16px;padding:0;max-width:680px;width:90%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:var(--bg);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;z-index:1;transition:all .15s;}
+.modal-close:hover{background:#FFEBEE;border-color:var(--red);color:var(--red);}
+.modal-header{background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff;padding:32px;border-radius:16px 16px 0 0;text-align:center;}
+.modal-header h2{font-size:24px;font-weight:800;margin-bottom:6px;}
+.modal-header p{font-size:14px;opacity:.85;}
+.modal-body{padding:28px;}
+.plans-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.plan-card{border:2px solid var(--border);border-radius:var(--radius);padding:22px;cursor:pointer;transition:all .2s;position:relative;}
+.plan-card:hover{border-color:var(--blue);transform:translateY(-2px);}
+.plan-card.popular{border-color:var(--blue);}
+.plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px;white-space:nowrap;}
+.plan-name{font-size:16px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.plan-price{font-size:28px;font-weight:800;color:var(--blue);margin:10px 0;}
+.plan-price span{font-size:14px;font-weight:500;color:var(--text3);}
+.plan-desc{font-size:12px;color:var(--text3);margin-bottom:16px;}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.plan-features li{font-size:12.5px;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.plan-features li::before{content:'✓';color:#2E7D32;font-weight:800;flex-shrink:0;}
+.plan-features li.no::before{content:'✗';color:var(--text3);}
+.plan-features li.no{color:var(--text3);}
+.btn-choose{width:100%;padding:12px;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:2px solid var(--blue);color:var(--blue);background:#fff;transition:all .2s;}
+.btn-choose:hover,.plan-card.popular .btn-choose{background:var(--blue);color:#fff;}
+.modal-note{font-size:12px;color:var(--text3);text-align:center;}
+
+/* ─── NOTIF DROPDOWN ─── */
+.notif-dropdown{position:absolute;top:52px;right:0;width:300px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 30px rgba(0,0,0,.12);display:none;z-index:200;}
+.notif-dropdown.show{display:block;}
+.notif-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.notif-header h4{font-size:13px;font-weight:700;color:var(--text);}
+.notif-header span{font-size:11px;color:var(--blue);cursor:pointer;}
+.notif-item{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;cursor:pointer;transition:background .1s;}
+.notif-item:last-child{border-bottom:none;}
+.notif-item:hover{background:#F8FAFF;}
+.notif-item.unread{background:#F0F4FF;}
+.notif-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.notif-text h5{font-size:12px;font-weight:600;color:var(--text);}
+.notif-text p{font-size:11px;color:var(--text3);}
+
+/* ─── USER DROPDOWN ─── */
+.user-dropdown{position:absolute;top:52px;right:0;width:220px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 30px rgba(0,0,0,.12);display:none;z-index:200;overflow:hidden;}
+.user-dropdown.show{display:block;}
+.user-dd-header{padding:14px 16px;border-bottom:1px solid var(--border);background:#F8FAFF;}
+.user-dd-header .name{font-size:13px;font-weight:700;color:var(--text);}
+.user-dd-header .email{font-size:11px;color:var(--text3);}
+.user-dd-item{padding:10px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text2);transition:background .1s;}
+.user-dd-item:hover{background:#F8FAFF;color:var(--blue);}
+.user-dd-item svg{width:15px;height:15px;flex-shrink:0;}
+.user-dd-divider{height:1px;background:var(--border);}
+.user-dd-item.danger{color:var(--red);}
+.user-dd-item.danger:hover{background:#FFEBEE;}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:12px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{background:#2E7D32;}
+.toast.error{background:var(--red);}
+.toast.info{background:var(--blue);}
+/* ─── PAYMENT MODAL ─── */
+.pay-method{border:2px solid var(--border);border-radius:var(--radius-sm);padding:12px;cursor:pointer;text-align:center;transition:all .15s;}
+.pay-method:hover{border-color:var(--blue);background:#F0F4FF;}
+.pay-method.active{border-color:var(--blue);background:#E3F2FD;}
+.pay-method-icon{font-size:24px;margin-bottom:4px;}
+.pay-method-name{font-size:11px;font-weight:600;color:var(--text2);}
+.pay-method.active .pay-method-name{color:var(--blue);}
+.pay-spinner{width:36px;height:36px;border:4px solid #E3F2FD;border-top:4px solid var(--blue);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.pay-step-indicator{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 0;}
+.pay-step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+.pay-step-dot.active{background:var(--blue);width:24px;border-radius:4px;}
+.pay-step-dot.done{background:#2E7D32;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo" onclick="showPage('beranda',document.querySelector('.nav-item'))">
+    <img src="codeplay_fullbg.png" alt="CodePlay Logo" style="height:80px;width:auto;object-fit:contain;">
+  </div>
+  <nav>
+    <div class="nav-item active" onclick="showPage('beranda',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Beranda
+    </div>
+    <div class="nav-item" onclick="showPage('belajar',this)">
+      <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Belajar
+    </div>
+    <div class="nav-item" onclick="showPage('quiz',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>Quiz
+    </div>
+    <div class="nav-item" onclick="showPage('challenge',this)">
+      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Challenge
+    </div>
+    <div class="nav-item" onclick="showPage('leaderboard',this)">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Leaderboard
+    </div>
+    <div class="nav-item" onclick="showPage('pencapaian',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Pencapaian
+    </div>
+    <div class="nav-item" onclick="showPage('toko',this)">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Toko
+    </div>
+    <div class="nav-item" onclick="showPage('pengaturan',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Pengaturan
+    </div>
+  </nav>
+  <div class="sidebar-promo">
+    <div class="trophy">🏆</div>
+    <h4>Upgrade ke PRO</h4>
+    <p>Akses semua level, challenge khusus, dan fitur premium!</p>
+    <button class="btn-upgrade" onclick="openModal('modal-upgrade')">Upgrade Sekarang</button>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span class="topbar-title" id="page-title">Beranda</span>
+  <div class="stat-badge stat-fire">🔥 <strong id="streak-count">7</strong> Streak</div>
+  <div class="stat-badge stat-xp">⭐ <strong id="xp-count">1200</strong> XP</div>
+  <div style="position:relative;">
+    <div class="notif-btn" id="notif-btn" onclick="toggleNotif()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-dot" id="notif-dot"></div>
+    </div>
+    <div class="notif-dropdown" id="notif-dropdown">
+      <div class="notif-header"><h4>Notifikasi</h4><span onclick="markAllRead()">Tandai semua dibaca</span></div>
+      <div class="notif-item unread"><div class="notif-icon" style="background:#E3F2FD">🔥</div><div class="notif-text"><h5>Streak 7 hari!</h5><p>Pertahankan streak kamu hari ini</p></div></div>
+      <div class="notif-item unread"><div class="notif-icon" style="background:#FFF8E1">⭐</div><div class="notif-text"><h5>Level Up tersedia</h5><p>Kamu hampir mencapai Level 3!</p></div></div>
+      <div class="notif-item"><div class="notif-icon" style="background:#E8F5E9">🏆</div><div class="notif-text"><h5>Pencapaian baru!</h5><p>7 Days Streak berhasil diraih</p></div></div>
+      <div class="notif-item"><div class="notif-icon" style="background:#FFF3E0">⚡</div><div class="notif-text"><h5>Challenge baru</h5><p>Tantangan #4 sudah tersedia</p></div></div>
+    </div>
+  </div>
+  <div style="position:relative;">
+    <div class="user-badge" id="user-btn" onclick="toggleUserDD()">
+      <div class="avatar">Ar</div>
+      <div class="user-info"><div class="name">Arif</div><div class="level">Level 2</div></div>
+    </div>
+    <div class="user-dropdown" id="user-dropdown">
+      <div class="user-dd-header"><div class="name">Arif</div><div class="email">arif@example.com</div></div>
+      <div class="user-dd-item" onclick="showPage('pengaturan',null);closeDropdowns()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09"/></svg>Pengaturan
+      </div>
+      <div class="user-dd-item" onclick="openModal('modal-upgrade');closeDropdowns()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Upgrade ke PRO
+      </div>
+      <div class="user-dd-divider"></div>
+      <div class="user-dd-item danger" onclick="confirmLogout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Keluar
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+<!-- ===== BERANDA ===== -->
+<div class="page active" id="page-beranda">
+  <div class="hero">
+    <div class="hero-text">
+      <h2>Belajar Coding jadi<br>Seru dan Menantang!</h2>
+      <p>Tingkatkan skill coding-mu dengan learning card, quiz interaktif, dan challenge seru setiap hari.</p>
+    </div>
+    <div class="hero-code">
+      <span style="color:#6272A4">// Coding is fun!</span><br>
+      <span style="color:#FF79C6">def</span> <span style="color:#50FA7B">hello</span>():<br>
+      &nbsp;&nbsp;<span style="color:#F1FA8C">print</span>(<span style="color:#F1FA8C">"Hello, Coder!"</span>)<br>
+      <span style="color:#50FA7B">hello</span>()
+    </div>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-main">
+      <div class="card">
+        <div class="card-title">Progress Belajar</div>
+        <div class="progress-grid">
+          <div class="progress-item" onclick="showPage('belajar',null)">
+            <div class="progress-item-top">
+              <div class="lang-icon" style="background:#3776AB22;">🐍</div>
+              <div class="progress-info"><h4>Python – Level 2</h4><p>Dasar Pemrograman</p></div>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+              <span class="progress-pct">60%</span>
+            </div>
+          </div>
+          <div class="progress-item" onclick="showPage('belajar',null)">
+            <div class="progress-item-top">
+              <div class="lang-icon" style="background:#F0DB4F28;font-size:13px;font-weight:900;color:#F0B429;">JS</div>
+              <div class="progress-info"><h4>JavaScript – Level 1</h4><p>Pengenalan Dasar</p></div>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:30%;background:linear-gradient(to right,#F0DB4F,#F57C00)"></div></div>
+              <span class="progress-pct">30%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title-row">
+          <span>Lanjutkan Belajar</span>
+          <span class="see-all" onclick="showPage('belajar',null)">Lihat Semua →</span>
+        </div>
+        <div class="content-cards">
+          <div class="content-card" onclick="showPage('belajar',null)">
+            <div class="content-tag tag-lc">📖 Learning Card</div>
+            <h4>Apa itu Variable?</h4>
+            <p>Pelajari konsep variable dalam Python.</p>
+            <div class="content-meta"><div class="meta-info">Level 2 · 5 min</div>
+              <div class="play-btn"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+            </div>
+          </div>
+          <div class="content-card" onclick="showPage('quiz',null)">
+            <div class="content-tag tag-quiz">❓ Quiz</div>
+            <h4>Quiz: Tipe Data</h4>
+            <p>Uji pemahamanmu tentang tipe data.</p>
+            <div class="content-meta"><div class="meta-info">Level 2 · 10 soal</div>
+              <div class="play-btn" style="background:#2E7D32"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+            </div>
+          </div>
+          <div class="content-card" onclick="showPage('challenge',null)">
+            <div class="content-tag tag-ch">⚡ Challenge</div>
+            <h4>Tantangan #3</h4>
+            <p>Buat program menghitung faktorial bilangan.</p>
+            <div class="content-meta"><div class="meta-info">Level 2 · Medium</div>
+              <div class="play-btn" style="background:#E65100"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+            </div>
+          </div>
+          <div class="content-card" onclick="showPage('belajar',null)">
+            <div class="content-tag tag-js">⭐ Learning Card</div>
+            <h4>Pengenalan JavaScript</h4>
+            <p>Kenali dasar-dasar JavaScript.</p>
+            <div class="content-meta"><div class="meta-info">Level 1 · 5 min</div>
+              <div class="play-btn" style="background:#F57F17"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Jelajahi Level</div>
+        <div class="level-track">
+          <div class="level-node done">
+            <div class="check-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h4>Level 1</h4><p>Pengenalan Dasar</p>
+          </div>
+          <div class="level-connector done"></div>
+          <div class="level-node active">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" style="display:block;margin:0 auto 4px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <h4>Level 2</h4><p>Dasar Pemrograman</p>
+            <span class="level-prog-txt">60%</span>
+            <div class="level-prog-bar"><div class="level-prog-fill" style="width:60%"></div></div>
+          </div>
+          <div class="level-connector"></div>
+          <div class="level-node locked">
+            <div class="lock-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <h4>Level 3</h4><p>Pengembangan Logika</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-side">
+      <div class="card">
+        <div class="card-title">Ringkasan</div>
+        <div class="summary-stat"><div class="stat-icon" style="background:#FFF3E0">🔥</div><div class="stat-text"><h4 id="sum-streak">7</h4><p>Streak</p></div></div>
+        <div class="summary-stat"><div class="stat-icon" style="background:#FFF8E1">⭐</div><div class="stat-text"><h4 id="sum-xp">1200</h4><p>Total XP</p></div></div>
+        <div class="summary-stat" style="border-bottom:none"><div class="stat-icon" style="background:#E3F2FD">🏅</div>
+          <div class="stat-text" style="width:100%">
+            <h4>Level 2 <span class="level-badge">Explorer</span></h4>
+            <div style="margin-top:8px"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;margin-bottom:4px"><span style="color:var(--text3)">Progress</span><span style="color:var(--blue)">60%</span></div>
+            <div class="level-bar"><div class="level-fill" style="width:60%"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cal-header"><h4>Aktivitas Harian</h4><span style="font-size:11px;color:var(--text3)">Mei 2024</span></div>
+        <div class="cal-grid">
+          <div class="cal-day-name">Sen</div><div class="cal-day-name">Sel</div><div class="cal-day-name">Rab</div><div class="cal-day-name">Kam</div><div class="cal-day-name">Jum</div><div class="cal-day-name">Sab</div><div class="cal-day-name">Min</div>
+          <div class="cal-day other">29</div><div class="cal-day other">30</div><div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div>
+          <div class="cal-day">6</div><div class="cal-day today">7</div><div class="cal-day streak">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div>
+          <div class="cal-day streak">13</div><div class="cal-day streak">14</div><div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div>
+          <div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22</div><div class="cal-day active">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div>
+          <div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div><div class="cal-day other">1</div><div class="cal-day other">2</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title-row"><span>Pencapaian Terbaru</span><span class="see-all" onclick="showPage('pencapaian',null)">Lihat Semua</span></div>
+        <div class="achievement-item"><div class="ach-icon" style="background:#E8F5E9">✅</div><div class="ach-text"><h5>First Steps</h5><p>Selesaikan learning card pertama</p></div><div class="ach-xp">+50 XP</div></div>
+        <div class="achievement-item"><div class="ach-icon" style="background:#FFF8E1">⭐</div><div class="ach-text"><h5>Quiz Master</h5><p>Selesaikan 5 quiz dengan benar</p></div><div class="ach-xp">+100 XP</div></div>
+        <div class="achievement-item"><div class="ach-icon" style="background:#FFF3E0">🔥</div><div class="ach-text"><h5>7 Days Streak</h5><p>Belajar 7 hari berturut-turut</p></div><div class="ach-xp">+150 XP</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BELAJAR ===== -->
+<div class="page" id="page-belajar">
+  <div class="learn-container">
+    <div class="learn-content">
+      <div class="breadcrumb">Python · Level 2 · <span>Dasar Pemrograman</span></div>
+      <h1 class="learn-title" id="learn-title">Apa itu Variable?</h1>
+      <p class="learn-body" id="learn-body">Variable adalah tempat menyimpan data yang nilainya dapat berubah dalam program.</p>
+      <div class="code-block" id="learn-code">
+        <span style="color:#8BE9FD">x</span> = <span style="color:#BD93F9">10</span><br>
+        <span style="color:#8BE9FD">nama</span> = <span style="color:#F1FA8C">"Arif"</span><br>
+        <span style="color:#50FA7B">print</span>(<span style="color:#8BE9FD">nama</span>)
+      </div>
+      <div class="explain-section">
+        <h3>Penjelasan</h3>
+        <p id="learn-explain">Variable digunakan untuk menyimpan data sementara di dalam program. Nama variable bisa berupa huruf, angka, dan underscore, namun tidak boleh diawali dengan angka.</p>
+      </div>
+      <div class="learn-nav">
+        <button class="btn-nav btn-prev" id="btn-prev-learn" onclick="navigateLearn(-1)">← Sebelumnya</button>
+        <div class="dot-nav" id="learn-dots"></div>
+        <button class="btn-nav btn-next" id="btn-next-learn" onclick="navigateLearn(1)">Selanjutnya →</button>
+      </div>
+    </div>
+    <div class="materi-card">
+      <div class="materi-title"><span>Daftar Materi</span><span id="materi-count" style="color:var(--text3);font-size:11px;">1 / 10</span></div>
+      <div id="materi-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="page" id="page-quiz">
+  <div class="quiz-container">
+    <div class="quiz-main">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:4px;">Quiz › Python · Level 2 › Dasar Pemrograman</div>
+      <div class="quiz-header">
+        <h2 style="font-size:18px;font-weight:800;color:var(--text);">Quiz: Tipe Data</h2>
+        <div class="xp-badge">⭐ +10 XP</div>
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:20px;" id="quiz-num-label">Soal 1 dari 5</div>
+      <div class="question" id="quiz-question"></div>
+      <div class="options" id="quiz-options"></div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <div class="quiz-footer">
+        <button class="btn-nav btn-prev" onclick="quizPrev()">← Sebelumnya</button>
+        <button class="btn-nav btn-next" id="quiz-next-btn" onclick="quizNext()">Selanjutnya →</button>
+      </div>
+    </div>
+    <div class="progress-quiz">
+      <div class="pq-title"><span>Progress Quiz</span><span id="quiz-pct" style="color:var(--blue);font-size:11px;">0%</span></div>
+      <div class="pq-bar"><div class="pq-fill" id="quiz-bar" style="width:0%"></div></div>
+      <div class="pq-list" id="quiz-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHALLENGE ===== -->
+<div class="page" id="page-challenge">
+  <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Challenge › Python · Level 2 › Tantangan #3</div>
+  <div class="challenge-container">
+    <div class="challenge-editor">
+      <div class="editor-header">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#E8EAF6;">Tantangan #3</div>
+          <div style="font-size:11px;display:inline-block;background:rgba(255,152,0,.2);color:#FF9800;padding:2px 8px;border-radius:4px;font-weight:600;margin-top:4px;">Media</div>
+          <div style="font-size:12px;color:#9999BB;margin-top:6px;">Buat program untuk menghitung faktorial dari sebuah bilangan.</div>
+        </div>
+        <select class="editor-select"><option>Python ▾</option><option>JavaScript</option><option>Java</option></select>
+      </div>
+      <textarea class="code-edit" id="code-editor" spellcheck="false">n = int(input())
+faktorial = 1
+
+for i in range(1, n+1):
+    faktorial *= i
+
+print(faktorial)</textarea>
+      <div>
+        <div style="font-size:11px;color:#6A6A8A;margin-bottom:4px;">Output:</div>
+        <div class="output-box" id="output-box">Klik "Jalankan" untuk melihat output...</div>
+      </div>
+      <div class="editor-actions">
+        <button class="btn-reset" onclick="resetCode()">↺ Reset</button>
+        <button class="btn-run" onclick="runCode()">▶ Jalankan</button>
+        <button class="btn-submit" onclick="submitCode()">Kirim Jawaban</button>
+      </div>
+    </div>
+    <div class="challenge-side">
+      <div class="test-card">
+        <div class="tc-title"><span>Test Case</span><span class="tc-status" id="tc-status">2 / 3 passed</span></div>
+        <div class="test-case">
+          <h5>Test Case 1</h5>
+          <div class="test-row"><span>Input</span><span>5</span></div>
+          <div class="test-row"><span>Output Benar</span><span>120</span></div>
+          <div class="test-status status-pass" id="tc1-status">✓ Passed</div>
+        </div>
+        <div class="test-case">
+          <h5>Test Case 2</h5>
+          <div class="test-row"><span>Input</span><span>0</span></div>
+          <div class="test-row"><span>Output Benar</span><span>1</span></div>
+          <div class="test-status status-fail" id="tc2-status">✗ Wrong Answer</div>
+        </div>
+        <div class="test-case">
+          <h5>Test Case 3</h5>
+          <div class="test-row"><span>Input</span><span>10</span></div>
+          <div class="test-row"><span>Output Benar</span><span>3628800</span></div>
+          <div class="test-status status-pass" id="tc3-status">✓ Passed</div>
+        </div>
+      </div>
+      <div class="tips-card">
+        <div class="tips-title">💡 Tips</div>
+        <div class="tips-body">Ingat, faktorial 0 adalah 1. Pastikan kamu menangani kasus n = 0 secara khusus.</div>
+      </div>
+      <div class="history-card">
+        <div class="history-title">Riwayat Submission</div>
+        <div class="history-item"><span class="his-time">13 Mar 2024 · 10:04</span><span class="his-status his-ok">Accepted</span></div>
+        <div class="history-item"><span class="his-time">13 Mar 2024 · 10:16</span><span class="his-status his-fail">Wrong Answer</span></div>
+        <div class="hint-link" onclick="showToast('Petunjuk: Gunakan kondisi if n == 0: return 1','info')">💡 Petunjuk</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LEADERBOARD ===== -->
+<div class="page" id="page-leaderboard">
+  <div class="lb-card">
+    <h2 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:16px;">Leaderboard</h2>
+    <div class="lb-tabs">
+      <div class="lb-tab active" onclick="switchLBTab(this,'global')">Global</div>
+      <div class="lb-tab" onclick="switchLBTab(this,'teman')">Teman</div>
+      <div class="lb-tab" onclick="switchLBTab(this,'mingguan')">Mingguan</div>
+    </div>
+    <div id="lb-table-wrap"></div>
+    <div class="lb-note">Leaderboard diperbarui setiap 1 jam.</div>
+  </div>
+</div>
+
+<!-- ===== PENCAPAIAN ===== -->
+<div class="page" id="page-pencapaian">
+  <div class="card">
+    <div class="tab-row">
+      <div class="tab-btn active" onclick="switchPencTab(this,'semua')">Semua</div>
+      <div class="tab-btn" onclick="switchPencTab(this,'terkunci')">Terkunci</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:var(--text);">Pencapaian Tercapai</div>
+      <div style="font-size:13px;color:var(--text2);">Progres: <strong style="color:var(--text)">12 / 24</strong></div>
+    </div>
+    <div class="ach-grid" id="ach-unlocked"></div>
+    <div class="ach-section-title" id="ach-locked-title">Pencapaian Terkunci</div>
+    <div class="ach-grid" id="ach-locked"></div>
+  </div>
+</div>
+
+<!-- ===== TOKO ===== -->
+<div class="page" id="page-toko">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="font-size:20px;font-weight:800;color:var(--text);">Toko</h2>
+      <div class="toko-balance">⭐ <span id="toko-xp">1200</span> XP</div>
+    </div>
+    <div class="shop-tabs">
+      <div class="shop-tab active" onclick="switchShopTab(this,'item')">Item</div>
+      <div class="shop-tab" onclick="switchShopTab(this,'boost')">Boost</div>
+      <div class="shop-tab" onclick="switchShopTab(this,'paket')">Paket</div>
+    </div>
+    <div class="shop-grid" id="shop-grid"></div>
+    <div class="shop-note">⭐ XP (Experience Point) dapat digunakan untuk membeli item dan boost di toko.</div>
+  </div>
+</div>
+
+<!-- ===== PENGATURAN ===== -->
+<div class="page" id="page-pengaturan">
+  <div class="card">
+    <h2 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:16px;">Pengaturan</h2>
+    <div class="settings-tabs">
+      <div class="settings-tab active" onclick="switchSettingsTab(this,'akun')">Akun</div>
+      <div class="settings-tab" onclick="switchSettingsTab(this,'notif')">Notifikasi</div>
+      <div class="settings-tab" onclick="switchSettingsTab(this,'tampilan')">Tampilan</div>
+      <div class="settings-tab" onclick="switchSettingsTab(this,'privasi')">Privasi & Keamanan</div>
+    </div>
+    <!-- AKUN -->
+    <div class="settings-content active" id="settings-akun">
+      <div class="settings-grid">
+        <div>
+          <div class="settings-section">
+            <h3>Informasi Akun</h3>
+            <div class="form-group"><label>Nama Lengkap</label><input class="form-input" id="f-nama" type="text" value="Arif" readonly></div>
+            <div class="form-group"><label>Email</label><input class="form-input" id="f-email" type="email" value="arif@example.com" readonly></div>
+            <div class="form-group"><label>Username</label><input class="form-input" id="f-username" type="text" value="arif_codeplay" readonly></div>
+            <div class="form-group"><label>Level</label><input class="form-input" type="text" value="Level 2" readonly></div>
+            <div class="form-group"><label>Total XP</label><input class="form-input" type="text" value="1200 XP" readonly></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn-edit" id="btn-edit-profile" onclick="toggleEditProfile()">Ubah Profil</button>
+              <button class="btn-save" id="btn-save-profile" style="display:none;width:auto;padding:8px 16px;margin-top:0;" onclick="saveProfile()">Simpan</button>
+            </div>
+          </div>
+          <div class="danger-section">
+            <h3>Keluar Akun</h3>
+            <p>Keluar dari akun CodePlay kamu.</p>
+            <button class="btn-logout" onclick="confirmLogout()">Keluar</button>
+          </div>
+        </div>
+        <div>
+          <div class="settings-section">
+            <h3>Ubah Password</h3>
+            <div class="form-group"><label>Password Saat Ini</label><input class="form-input" id="pw-current" type="password" placeholder="Masukkan password saat ini"></div>
+            <div class="form-group"><label>Password Baru</label><input class="form-input" id="pw-new" type="password" placeholder="Masukkan password baru"></div>
+            <div class="form-group"><label>Konfirmasi Password Baru</label><input class="form-input" id="pw-confirm" type="password" placeholder="Konfirmasi password baru"></div>
+            <button class="btn-save" onclick="savePassword()">Simpan Password</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- NOTIFIKASI -->
+    <div class="settings-content" id="settings-notif">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Notifikasi</h3>
+      <div class="toggle-row"><div class="toggle-info"><h5>Pengingat Belajar Harian</h5><p>Notifikasi setiap hari untuk belajar coding</p></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row"><div class="toggle-info"><h5>Notifikasi Streak</h5><p>Peringatan jika streak akan terputus</p></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row"><div class="toggle-info"><h5>Update Leaderboard</h5><p>Notifikasi perubahan peringkat</p></div><div class="toggle" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row"><div class="toggle-info"><h5>Challenge Baru</h5><p>Notifikasi ketika ada challenge baru</p></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row"><div class="toggle-info"><h5>Pencapaian</h5><p>Notifikasi ketika meraih achievement baru</p></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row"><div class="toggle-info"><h5>Email Promosi</h5><p>Update produk dan penawaran khusus</p></div><div class="toggle" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+    </div>
+    <!-- TAMPILAN -->
+    <div class="settings-content" id="settings-tampilan">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Tema Tampilan</h3>
+      <div class="theme-grid">
+        <div class="theme-item active" onclick="selectTheme(this,'light')"><div class="theme-preview" style="background:linear-gradient(135deg,#F4F6FB,#fff);border:1px solid var(--border)"></div><div class="theme-name">☀️ Light</div></div>
+        <div class="theme-item" onclick="selectTheme(this,'dark')"><div class="theme-preview" style="background:linear-gradient(135deg,#1A1A2E,#2A2A4A)"></div><div class="theme-name">🌙 Dark</div></div>
+        <div class="theme-item" onclick="selectTheme(this,'system')"><div class="theme-preview" style="background:linear-gradient(135deg,#F4F6FB 50%,#1A1A2E 50%)"></div><div class="theme-name">⚙️ System</div></div>
+      </div>
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Ukuran Font</h3>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <span style="font-size:11px;color:var(--text3)">Kecil</span>
+        <input type="range" min="1" max="3" value="2" style="flex:1" oninput="showToast('Ukuran font diubah','success')">
+        <span style="font-size:16px;color:var(--text3)">Besar</span>
+      </div>
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Bahasa</h3>
+      <select class="form-input" style="max-width:200px" onchange="showToast('Bahasa diubah ke '+this.value,'success')">
+        <option>Bahasa Indonesia</option><option>English</option><option>中文</option>
+      </select>
+    </div>
+    <!-- PRIVASI -->
+    <div class="settings-content" id="settings-privasi">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Privasi & Keamanan</h3>
+      <div class="privacy-item"><div class="privacy-info"><h5>Profil Publik</h5><p>Tampilkan profil kamu di leaderboard</p></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+      <div class="privacy-item"><div class="privacy-info"><h5>Tampilkan Aktivitas</h5><p>Tampilkan aktivitas belajar ke teman</p></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+      <div class="privacy-item"><div class="privacy-info"><h5>Two-Factor Authentication</h5><p>Keamanan ekstra untuk akun kamu</p></div><button class="btn-action" onclick="showToast('Fitur 2FA akan segera hadir','info')">Aktifkan</button></div>
+      <div class="privacy-item"><div class="privacy-info"><h5>Sesi Aktif</h5><p>Lihat dan kelola sesi yang sedang aktif</p></div><button class="btn-action" onclick="showToast('2 sesi aktif ditemukan','info')">Kelola</button></div>
+      <div class="privacy-item"><div class="privacy-info"><h5>Hapus Data Aktivitas</h5><p>Hapus semua riwayat aktivitas belajar</p></div><button class="btn-action" style="color:var(--red);border-color:var(--red);" onclick="showToast('Data aktivitas dihapus','error')">Hapus</button></div>
+      <div class="privacy-item" style="border-bottom:none"><div class="privacy-info"><h5>Hapus Akun</h5><p>Akun akan dihapus secara permanen</p></div><button class="btn-action" style="color:var(--red);border-color:var(--red);" onclick="confirmDeleteAccount()">Hapus Akun</button></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ===== MODAL UPGRADE PRO ===== -->
+<div class="modal-overlay" id="modal-upgrade">
+  <div class="modal">
+    <div class="modal-close" onclick="closeModal('modal-upgrade')">✕</div>
+    <div class="modal-header">
+      <div style="font-size:36px;margin-bottom:8px;">🚀</div>
+      <h2>Upgrade ke PRO</h2>
+      <p>Unlock semua fitur premium CodePlay dan belajar tanpa batas!</p>
+    </div>
+    <div class="modal-body">
+      <div class="plans-grid">
+        <!-- Basic Plan -->
+        <div class="plan-card" onclick="selectPlan(this,'basic')">
+          <div class="plan-name">Basic Plan</div>
+          <div class="plan-price">$4.99<span>/bulan</span></div>
+          <div class="plan-desc">Cocok untuk pemula yang ingin belajar lebih serius.</div>
+          <ul class="plan-features">
+            <li>Akses semua materi Level 1–3</li>
+            <li>10 Challenge per bulan</li>
+            <li>Quiz tanpa batas</li>
+            <li>Badge eksklusif Basic</li>
+            <li class="no">Challenge Level 4+</li>
+            <li class="no">Mentor 1-on-1</li>
+            <li class="no">Sertifikat resmi</li>
+          </ul>
+          <button class="btn-choose">Pilih Basic</button>
+        </div>
+        <!-- Pro Plan -->
+        <div class="plan-card popular" onclick="selectPlan(this,'pro')">
+          <div class="plan-badge">⭐ Paling Populer</div>
+          <div class="plan-name">Pro Plan</div>
+          <div class="plan-price">$9.99<span>/bulan</span></div>
+          <div class="plan-desc">Untuk learner serius yang ingin jadi programmer profesional.</div>
+          <ul class="plan-features">
+            <li>Akses semua materi semua Level</li>
+            <li>Challenge tanpa batas</li>
+            <li>Quiz & Learning Card eksklusif</li>
+            <li>Double XP setiap hari</li>
+            <li>Challenge Level 4+</li>
+            <li>Mentor 1-on-1 (2x/bulan)</li>
+            <li>Sertifikat resmi CodePlay</li>
+          </ul>
+          <button class="btn-choose">Pilih Pro</button>
+        </div>
+      </div>
+      <div class="modal-note">✓ Bisa cancel kapan saja &nbsp;·&nbsp; ✓ Garansi 7 hari uang kembali &nbsp;·&nbsp; ✓ Pembayaran aman</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL BELI ITEM ===== -->
+<div class="modal-overlay" id="modal-buy">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-close" onclick="closeModal('modal-buy')">✕</div>
+    <div style="padding:32px;text-align:center;">
+      <div style="font-size:56px;margin-bottom:12px;" id="buy-icon">🥷</div>
+      <h2 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:6px;" id="buy-name">Avatar Ninja</h2>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:20px;" id="buy-desc">Ubah avatar kamu menjadi ninja!</p>
+      <div style="background:#FFF8E1;border-radius:var(--radius-sm);padding:14px;margin-bottom:20px;">
+        <div style="font-size:13px;color:var(--text3);margin-bottom:4px;">Harga</div>
+        <div style="font-size:24px;font-weight:800;color:#F57C00;" id="buy-price">⭐ 500 XP</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:4px;">Saldo kamu: <strong id="buy-balance" style="color:#F57C00">1200 XP</strong></div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-edit" style="flex:1" onclick="closeModal('modal-buy')">Batal</button>
+        <button class="btn-save" style="flex:1;margin-top:0;" id="buy-confirm-btn" onclick="confirmBuy()">Beli Sekarang</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL KONFIRMASI ===== -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal" style="max-width:380px;">
+    <div style="padding:32px;text-align:center;">
+      <div style="font-size:48px;margin-bottom:12px;" id="confirm-icon">⚠️</div>
+      <h2 style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px;" id="confirm-title">Konfirmasi</h2>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:24px;" id="confirm-msg">Apakah kamu yakin?</p>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-edit" style="flex:1" onclick="closeModal('modal-confirm')">Batal</button>
+        <button class="btn-logout" style="flex:1;" id="confirm-ok-btn">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL PEMBAYARAN ===== -->
+<div class="modal-overlay" id="modal-payment">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-close" onclick="closeModal('modal-payment')">✕</div>
+    <!-- STEP 1: Ringkasan Order -->
+    <div id="pay-step-1">
+      <div class="modal-header" style="border-radius:16px 16px 0 0;padding:24px 28px;">
+        <div style="font-size:28px;margin-bottom:6px;">🛒</div>
+        <h2 style="font-size:18px;font-weight:800;">Ringkasan Pesanan</h2>
+      </div>
+      <div style="padding:24px 28px;">
+        <div style="background:#F8FAFF;border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--text);" id="pay-plan-name">Pro Plan</div>
+              <div style="font-size:12px;color:var(--text3);">Berlangganan bulanan</div>
+            </div>
+            <div style="font-size:20px;font-weight:800;color:var(--blue);" id="pay-plan-price">$9.99</div>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:10px;" id="pay-plan-features"></div>
+        </div>
+        <div style="background:#FFF8E1;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;border:1px solid #FFE0B2;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:18px;">🏷️</span>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:var(--text);">Kode Promo</div><input id="promo-input" class="form-input" style="margin-top:4px;padding:6px 10px;font-size:12px;" placeholder="Masukkan kode promo (misal: CODEPLAY20)"></div>
+          <button onclick="applyPromo()" style="background:var(--orange);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">Pakai</button>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:12px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin-bottom:6px;"><span>Subtotal</span><span id="pay-subtotal">$9.99</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:#2E7D32;margin-bottom:6px;" id="pay-discount-row" style="display:none;"><span>Diskon Promo</span><span id="pay-discount">-$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;color:var(--text);"><span>Total</span><span id="pay-total">$9.99</span></div>
+        </div>
+        <button class="btn-save" onclick="goPayStep(2)" style="width:100%;margin-top:0;">Lanjut ke Pembayaran →</button>
+        <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--text3);">🔒 Transaksi aman & terenkripsi SSL</div>
+      </div>
+    </div>
+    <!-- STEP 2: Pilih Metode Bayar -->
+    <div id="pay-step-2" style="display:none;">
+      <div class="modal-header" style="border-radius:16px 16px 0 0;padding:24px 28px;">
+        <div style="font-size:28px;margin-bottom:6px;">💳</div>
+        <h2 style="font-size:18px;font-weight:800;">Pilih Metode Pembayaran</h2>
+      </div>
+      <div style="padding:24px 28px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;" id="pay-methods">
+          <div class="pay-method active" onclick="selectPayMethod(this,'Kartu Kredit/Debit')">
+            <div class="pay-method-icon">💳</div><div class="pay-method-name">Kartu Kredit/Debit</div>
+          </div>
+          <div class="pay-method" onclick="selectPayMethod(this,'GoPay')">
+            <div class="pay-method-icon">📱</div><div class="pay-method-name">GoPay</div>
+          </div>
+          <div class="pay-method" onclick="selectPayMethod(this,'OVO')">
+            <div class="pay-method-icon">💜</div><div class="pay-method-name">OVO</div>
+          </div>
+          <div class="pay-method" onclick="selectPayMethod(this,'DANA')">
+            <div class="pay-method-icon">🔵</div><div class="pay-method-name">DANA</div>
+          </div>
+          <div class="pay-method" onclick="selectPayMethod(this,'Transfer Bank')">
+            <div class="pay-method-icon">🏦</div><div class="pay-method-name">Transfer Bank</div>
+          </div>
+          <div class="pay-method" onclick="selectPayMethod(this,'Alfamart/Indomaret')">
+            <div class="pay-method-icon">🏪</div><div class="pay-method-name">Alfamart/Indomaret</div>
+          </div>
+        </div>
+        <!-- Form Kartu -->
+        <div id="pay-form-card">
+          <div class="form-group"><label>Nomor Kartu</label><input class="form-input" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group"><label>Masa Berlaku</label><input class="form-input" id="card-exp" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)"></div>
+            <div class="form-group"><label>CVV</label><input class="form-input" id="card-cvv" placeholder="123" maxlength="3" type="password"></div>
+          </div>
+          <div class="form-group"><label>Nama di Kartu</label><input class="form-input" id="card-name" placeholder="ARIF CODEPLAY"></div>
+        </div>
+        <!-- Form E-Wallet -->
+        <div id="pay-form-ewallet" style="display:none;">
+          <div class="form-group"><label>Nomor HP</label><input class="form-input" id="ewallet-phone" placeholder="08xxxxxxxxxx" maxlength="14"></div>
+          <div style="background:#F8FAFF;border-radius:var(--radius-sm);padding:12px;font-size:12px;color:var(--text2);border:1px solid var(--border);">📲 Kamu akan menerima notifikasi di aplikasi <span id="ewallet-name" style="font-weight:700;color:var(--blue)">GoPay</span> untuk konfirmasi pembayaran.</div>
+        </div>
+        <!-- Form Bank -->
+        <div id="pay-form-bank" style="display:none;">
+          <div style="background:#F8FAFF;border-radius:var(--radius-sm);padding:14px;border:1px solid var(--border);">
+            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">Transfer ke rekening:</div>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:4px;">🏦 BCA: <strong style="color:var(--text)">1234-5678-90</strong></div>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:4px;">🏦 Mandiri: <strong style="color:var(--text)">987-654-3210</strong></div>
+            <div style="font-size:13px;color:var(--text2);">🏦 BNI: <strong style="color:var(--text)">0987-6543-21</strong></div>
+            <div style="margin-top:10px;font-size:11px;color:#F57C00;font-weight:600;">⚠️ Transfer dalam 24 jam. Kirim bukti ke support@codeplay.id</div>
+          </div>
+        </div>
+        <!-- Form Minimarket -->
+        <div id="pay-form-mini" style="display:none;">
+          <div style="background:#F8FAFF;border-radius:var(--radius-sm);padding:14px;border:1px solid var(--border);">
+            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">Kode Pembayaran Minimarket:</div>
+            <div style="font-size:24px;font-weight:800;color:var(--blue);letter-spacing:4px;text-align:center;padding:10px;background:#E3F2FD;border-radius:var(--radius-sm);">7731-4829-0012</div>
+            <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px;">Berlaku sampai 24 jam dari sekarang</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;">
+          <button class="btn-edit" onclick="goPayStep(1)" style="flex:1;">← Kembali</button>
+          <button class="btn-save" onclick="goPayStep(3)" style="flex:2;margin-top:0;" id="pay-btn-step2">Bayar Sekarang →</button>
+        </div>
+      </div>
+    </div>
+    <!-- STEP 3: Processing -->
+    <div id="pay-step-3" style="display:none;">
+      <div style="padding:48px 28px;text-align:center;">
+        <div style="width:72px;height:72px;border-radius:50%;background:#E3F2FD;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;"><div class="pay-spinner"></div></div>
+        <h2 style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px;">Memproses Pembayaran...</h2>
+        <p style="font-size:13px;color:var(--text2);">Harap tunggu, kami sedang memverifikasi transaksimu.</p>
+        <div style="margin-top:20px;background:#F8FAFF;border-radius:var(--radius-sm);padding:12px;font-size:12px;color:var(--text3);">🔒 Koneksi aman & terenkripsi</div>
+      </div>
+    </div>
+    <!-- STEP 4: Sukses -->
+    <div id="pay-step-4" style="display:none;">
+      <div style="padding:48px 28px;text-align:center;">
+        <div style="width:80px;height:80px;border-radius:50%;background:#E8F5E9;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:40px;">✅</div>
+        <h2 style="font-size:22px;font-weight:800;color:#2E7D32;margin-bottom:8px;">Pembayaran Berhasil!</h2>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:20px;">Selamat! Akun kamu kini sudah aktif sebagai member <span id="success-plan-name" style="font-weight:700;color:var(--blue)">Pro</span>.</p>
+        <div style="background:#F8FAFF;border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:20px;text-align:left;">
+          <div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Detail Transaksi</div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--text3)">ID Transaksi</span><span style="font-weight:700;color:var(--text)" id="tx-id">TRX-20240513-001</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--text3)">Paket</span><span style="font-weight:700;color:var(--text)" id="tx-plan">Pro Plan</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--text3)">Total Bayar</span><span style="font-weight:700;color:var(--blue)" id="tx-amount">$9.99</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--text3)">Berlaku sampai</span><span style="font-weight:700;color:var(--text)" id="tx-expire">13 Juni 2026</span></div>
+        </div>
+        <div style="background:#FFF8E1;border-radius:var(--radius-sm);padding:10px;font-size:12px;color:#F57C00;margin-bottom:20px;">📧 Bukti pembayaran telah dikirim ke arif@example.com</div>
+        <button class="btn-save" onclick="closeModal('modal-payment');showToast('Selamat bergabung di CodePlay PRO! 🎉','success');" style="width:100%;margin-top:0;">Mulai Belajar Sekarang 🚀</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──────────────────────────────────────
+let userXP = 1200;
+let userStreak = 7;
+let currentLearnSlide = 0;
+let currentQuizQ = 0;
+let quizAnswers = {};
+let editingProfile = false;
+let currentBuyItem = null;
+let currentShopTab = 'item';
+let ownedItems = new Set();
+
+// ── PAGE NAVIGATION ──────────────────────────
+const pageTitles = {beranda:'Beranda',belajar:'Belajar',quiz:'Quiz',challenge:'Challenge',leaderboard:'Leaderboard',pencapaian:'Pencapaian',toko:'Toko',pengaturan:'Pengaturan'};
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(n=>{if(n.onclick&&n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"))n.classList.add('active');});
+  document.getElementById('page-title').textContent = pageTitles[id]||id;
+  closeDropdowns();
+  window.scrollTo(0,0);
+  if(id==='quiz') renderQuiz();
+  if(id==='leaderboard') renderLeaderboard('global');
+  if(id==='pencapaian') renderPencapaian('semua');
+  if(id==='toko') renderShop(currentShopTab);
+  if(id==='belajar') initLearn();
+}
+
+// ── DROPDOWNS ──────────────────────────────
+function toggleNotif(){
+  const dd=document.getElementById('notif-dropdown');
+  const ud=document.getElementById('user-dropdown');
+  ud.classList.remove('show');
+  dd.classList.toggle('show');
+}
+function toggleUserDD(){
+  const dd=document.getElementById('user-dropdown');
+  const nd=document.getElementById('notif-dropdown');
+  nd.classList.remove('show');
+  dd.classList.toggle('show');
+}
+function closeDropdowns(){
+  document.getElementById('notif-dropdown').classList.remove('show');
+  document.getElementById('user-dropdown').classList.remove('show');
+}
+function markAllRead(){
+  document.querySelectorAll('.notif-item.unread').forEach(i=>i.classList.remove('unread'));
+  document.getElementById('notif-dot').style.display='none';
+  showToast('Semua notifikasi ditandai dibaca','success');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#notif-btn')&&!e.target.closest('#notif-dropdown'))document.getElementById('notif-dropdown').classList.remove('show');
+  if(!e.target.closest('#user-btn')&&!e.target.closest('#user-dropdown'))document.getElementById('user-dropdown').classList.remove('show');
+});
+
+// ── TOAST ──────────────────────────────────
+function showToast(msg, type='info'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast '+type+' show';
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── MODAL ──────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');}));
+
+// ── UPGRADE PLAN ──────────────────────────
+let selectedPlanData = null;
+function selectPlan(el, plan){
+  selectedPlanData = plan==='pro'?{name:'Pro Plan',price:'$9.99',period:'bulan',features:['Akses semua materi','Challenge tanpa batas','Double XP harian','Mentor 1-on-1','Sertifikat resmi']}:{name:'Basic Plan',price:'$4.99',period:'bulan',features:['Akses materi Level 1-3','10 Challenge/bulan','Quiz tanpa batas','Badge eksklusif']};
+  closeModal('modal-upgrade');
+  openPaymentModal(selectedPlanData);
+}
+
+// ── LOGOUT CONFIRM ────────────────────────
+function confirmLogout(){
+  const btn = document.getElementById('confirm-ok-btn');
+  document.getElementById('confirm-icon').textContent='🚪';
+  document.getElementById('confirm-title').textContent='Keluar Akun';
+  document.getElementById('confirm-msg').textContent='Apakah kamu yakin ingin keluar dari akun CodePlay?';
+  btn.onclick=()=>{closeModal('modal-confirm');showToast('Berhasil keluar dari akun','info');};
+  openModal('modal-confirm');
+}
+function confirmDeleteAccount(){
+  const btn = document.getElementById('confirm-ok-btn');
+  document.getElementById('confirm-icon').textContent='⚠️';
+  document.getElementById('confirm-title').textContent='Hapus Akun Permanen';
+  document.getElementById('confirm-msg').textContent='Aksi ini tidak dapat dibatalkan. Semua data progress kamu akan hilang selamanya!';
+  btn.onclick=()=>{closeModal('modal-confirm');showToast('Akun berhasil dihapus','error');};
+  openModal('modal-confirm');
+}
+
+// ── BELAJAR / LEARN ───────────────────────
+const learnSlides = [
+  {
+    title:'Apa itu Variable?',
+    body:'Variable adalah tempat menyimpan data yang nilainya dapat berubah dalam program. Setiap variable memiliki nama unik yang digunakan untuk mengaksesnya.',
+    code:`<span style="color:#8BE9FD">x</span> = <span style="color:#BD93F9">10</span>\n<span style="color:#8BE9FD">nama</span> = <span style="color:#F1FA8C">"Arif"</span>\n<span style="color:#8BE9FD">tinggi</span> = <span style="color:#BD93F9">175.5</span>\n<span style="color:#50FA7B">print</span>(<span style="color:#8BE9FD">nama</span>, <span style="color:#8BE9FD">x</span>)`,
+    explain:'Variable digunakan untuk menyimpan data sementara di dalam program. Nama variable bisa berupa huruf, angka, dan underscore, namun tidak boleh diawali dengan angka. Python case-sensitive, jadi "Nama" dan "nama" dianggap berbeda.'
+  },
+  {
+    title:'Tipe Data',
+    body:'Python memiliki beberapa tipe data dasar: int (bilangan bulat), float (bilangan desimal), string (teks), dan boolean (True/False).',
+    code:`<span style="color:#8BE9FD">angka</span> = <span style="color:#BD93F9">42</span>          <span style="color:#6272A4"># int</span>\n<span style="color:#8BE9FD">desimal</span> = <span style="color:#BD93F9">3.14</span>      <span style="color:#6272A4"># float</span>\n<span style="color:#8BE9FD">teks</span> = <span style="color:#F1FA8C">"Hello"</span>    <span style="color:#6272A4"># string</span>\n<span style="color:#8BE9FD">benar</span> = <span style="color:#FF79C6">True</span>       <span style="color:#6272A4"># boolean</span>\n<span style="color:#50FA7B">print</span>(<span style="color:#50FA7B">type</span>(<span style="color:#8BE9FD">angka</span>))   <span style="color:#6272A4"># &lt;class 'int'&gt;</span>`,
+    explain:"Setiap variable di Python memiliki tipe data. Python bersifat dynamically typed, artinya tipe data ditentukan otomatis. Gunakan fungsi type() untuk mengecek tipe data sebuah variable."
+  },
+  {
+    title:'Input dan Output',
+    body:'Python menggunakan fungsi input() untuk menerima masukan dari pengguna dan print() untuk menampilkan output ke layar.',
+    code:`<span style="color:#8BE9FD">nama</span> = <span style="color:#50FA7B">input</span>(<span style="color:#F1FA8C">"Siapa namamu? "</span>)\n<span style="color:#8BE9FD">umur</span> = <span style="color:#50FA7B">int</span>(<span style="color:#50FA7B">input</span>(<span style="color:#F1FA8C">"Umurmu? "</span>))\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">f"Halo, {nama}! Kamu berumur {umur} tahun."</span>)\n<span style="color:#6272A4"># Output: Halo, Arif! Kamu berumur 20 tahun.</span>`,
+    explain:'Fungsi input() selalu mengembalikan nilai berupa string. Jika kamu ingin menerima angka, gunakan int() atau float() untuk mengkonversi. F-string (f"...") adalah cara modern untuk memformat teks di Python.'
+  },
+  {
+    title:'Operator Aritmatika',
+    body:'Python mendukung operasi matematika lengkap: penjumlahan, pengurangan, perkalian, pembagian, modulo, pemangkatan, dan pembagian bulat.',
+    code:`<span style="color:#8BE9FD">a</span>, <span style="color:#8BE9FD">b</span> = <span style="color:#BD93F9">10</span>, <span style="color:#BD93F9">3</span>\n<span style="color:#50FA7B">print</span>(<span style="color:#8BE9FD">a</span> + <span style="color:#8BE9FD">b</span>)   <span style="color:#6272A4"># 13  → penjumlahan</span>\n<span style="color:#50FA7B">print</span>(<span style="color:#8BE9FD">a</span> - <span style="color:#8BE9FD">b</span>)   <span style="color:#6272A4"># 7   → pengurangan</span>\n<span style="color:#50FA7B">print</span>(<span style="color:#8BE9FD">a</span> * <span style="color:#8BE9FD">b</span>)   <span style="color:#6272A4"># 30  → perkalian</span>\n<span style="color:#50FA7B">print</span>(<span style="color:#8BE9FD">a</span> / <span style="color:#8BE9FD">b</span>)   <span style="color:#6272A4"># 3.33 → pembagian</span>\n<span style="color:#50FA7B">print</span>(<span style="color:#8BE9FD">a</span> % <span style="color:#8BE9FD">b</span>)   <span style="color:#6272A4"># 1   → modulo (sisa bagi)</span>\n<span style="color:#50FA7B">print</span>(<span style="color:#8BE9FD">a</span> ** <span style="color:#8BE9FD">b</span>)  <span style="color:#6272A4"># 1000 → pemangkatan</span>\n<span style="color:#50FA7B">print</span>(<span style="color:#8BE9FD">a</span> // <span style="color:#8BE9FD">b</span>)  <span style="color:#6272A4"># 3   → pembagian bulat</span>`,
+    explain:'Operator modulo (%) sangat berguna untuk mengecek bilangan genap/ganjil, atau membatasi nilai dalam rentang tertentu. Operator // melakukan pembagian dan membuang bagian desimalnya.'
+  },
+  {
+    title:'Latihan: Kalkulator Sederhana',
+    body:'Sekarang waktunya latihan! Kita akan membuat kalkulator sederhana yang bisa menerima dua angka dan menampilkan hasil operasinya.',
+    code:`<span style="color:#6272A4"># Kalkulator Sederhana</span>\n<span style="color:#8BE9FD">a</span> = <span style="color:#50FA7B">float</span>(<span style="color:#50FA7B">input</span>(<span style="color:#F1FA8C">"Angka pertama: "</span>))\n<span style="color:#8BE9FD">b</span> = <span style="color:#50FA7B">float</span>(<span style="color:#50FA7B">input</span>(<span style="color:#F1FA8C">"Angka kedua: "</span>))\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">f"Jumlah : {a+b}"</span>)\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">f"Selisih: {a-b}"</span>)\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">f"Kali   : {a*b}"</span>)\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">f"Bagi   : {a/b:.2f}"</span>)`,
+    explain:'Latihan ini mengkombinasikan input(), konversi tipe data float(), f-string, dan semua operator aritmatika. Format :.2f digunakan untuk membatasi angka desimal menjadi 2 digit.'
+  },
+  {
+    title:'Quiz: Uji Pemahaman',
+    body:'Sebelum lanjut, mari uji pemahamanmu dengan mengerjakan quiz singkat! Quiz ini berisi pertanyaan tentang materi yang sudah dipelajari.',
+    code:`<span style="color:#6272A4"># Contoh soal quiz:</span>\n<span style="color:#6272A4"># Apa output dari kode berikut?</span>\n<span style="color:#8BE9FD">x</span> = <span style="color:#BD93F9">5</span>\n<span style="color:#8BE9FD">y</span> = <span style="color:#BD93F9">2</span>\n<span style="color:#50FA7B">print</span>(<span style="color:#8BE9FD">x</span> ** <span style="color:#8BE9FD">y</span>)\n<span style="color:#6272A4"># Jawaban: 25</span>`,
+    explain:'Kerjakan quiz dari menu Quiz di sidebar untuk mendapatkan XP tambahan! Setiap jawaban benar memberikan +10 XP. Kamu bisa mengulang quiz sebanyak yang kamu mau.'
+  },
+  {
+    title:'Summary: Rangkuman Materi',
+    body:'Ringkasan dari semua yang sudah dipelajari di Level 2 — Dasar Pemrograman Python.',
+    code:`<span style="color:#6272A4"># ✅ RANGKUMAN LEVEL 2</span>\n<span style="color:#6272A4"># 1. Variable: tempat simpan data</span>\n<span style="color:#8BE9FD">nama</span> = <span style="color:#F1FA8C">"Arif"</span>\n<span style="color:#6272A4"># 2. Tipe data: int, float, str, bool</span>\n<span style="color:#6272A4"># 3. Input & Output: input(), print()</span>\n<span style="color:#6272A4"># 4. Operator: +,-,*,/,%,**,//</span>\n<span style="color:#6272A4"># 5. Format string: f"Halo, {nama}"</span>`,
+    explain:'Kamu telah mempelajari fondasi dasar Python! Variable, tipe data, I/O, dan operator adalah building blocks yang akan terus digunakan di semua program Python yang lebih kompleks.'
+  },
+  {
+    title:'Challenge: Hitung Luas & Keliling',
+    body:'Waktunya challenge! Buat program yang menghitung luas dan keliling persegi panjang berdasarkan input panjang dan lebar dari pengguna.',
+    code:`<span style="color:#6272A4"># Challenge: Persegi Panjang</span>\n<span style="color:#8BE9FD">panjang</span> = <span style="color:#50FA7B">float</span>(<span style="color:#50FA7B">input</span>(<span style="color:#F1FA8C">"Panjang: "</span>))\n<span style="color:#8BE9FD">lebar</span>   = <span style="color:#50FA7B">float</span>(<span style="color:#50FA7B">input</span>(<span style="color:#F1FA8C">"Lebar  : "</span>))\n<span style="color:#8BE9FD">luas</span>    = <span style="color:#8BE9FD">panjang</span> * <span style="color:#8BE9FD">lebar</span>\n<span style="color:#8BE9FD">keliling</span>= <span style="color:#BD93F9">2</span> * (<span style="color:#8BE9FD">panjang</span> + <span style="color:#8BE9FD">lebar</span>)\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">f"Luas    : {luas}"</span>)\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">f"Keliling: {keliling}"</span>)`,
+    explain:'Challenge ini melatihmu menggabungkan input, konversi tipe, operasi aritmatika, dan output sekaligus. Coba kerjakan di halaman Challenge untuk mendapatkan +50 XP!'
+  },
+  {
+    title:'Studi Kasus: Konversi Suhu',
+    body:'Studi kasus nyata: membuat konverter suhu dari Celsius ke Fahrenheit dan Kelvin. Program ini sering dipakai di aplikasi cuaca dan sains.',
+    code:`<span style="color:#6272A4"># Konversi Suhu</span>\n<span style="color:#8BE9FD">celsius</span> = <span style="color:#50FA7B">float</span>(<span style="color:#50FA7B">input</span>(<span style="color:#F1FA8C">"Suhu Celsius: "</span>))\n\n<span style="color:#8BE9FD">fahrenheit</span> = (<span style="color:#8BE9FD">celsius</span> * <span style="color:#BD93F9">9</span>/<span style="color:#BD93F9">5</span>) + <span style="color:#BD93F9">32</span>\n<span style="color:#8BE9FD">kelvin</span>     = <span style="color:#8BE9FD">celsius</span> + <span style="color:#BD93F9">273.15</span>\n\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">f"{celsius}°C = {fahrenheit:.1f}°F"</span>)\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">f"{celsius}°C = {kelvin:.2f} K"</span>)`,
+    explain:'Studi kasus ini menunjukkan bagaimana Python digunakan untuk memecahkan masalah dunia nyata. Formula konversi suhu adalah contoh klasik penggunaan operator aritmatika dalam program praktis.'
+  },
+  {
+    title:'Kesimpulan Level 2 ✅',
+    body:'Selamat! Kamu telah menyelesaikan Level 2 - Dasar Pemrograman Python. Kamu kini memahami fondasi penting untuk mulai membuat program Python yang sesungguhnya.',
+    code:`<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">"🎉 Selamat!"</span>)\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">"Level 2 selesai!"</span>)\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">"XP diperoleh: +200 XP"</span>)\n<span style="color:#50FA7B">print</span>(<span style="color:#F1FA8C">"Level berikutnya: Pengkondisian & Perulangan"</span>)`,
+    explain:'Di Level 3, kamu akan belajar tentang if-else (pengkondisian), for loop, while loop, dan fungsi. Konsep-konsep ini akan membuatmu mampu membuat program yang jauh lebih canggih dan dinamis. Semangat!'
+  },
+];
+const materiNames = ['Apa itu Variable?','Tipe Data','Input dan Output','Operator Aritmatika','Latihan','Quiz','Summary','Challenge','Studi Kasus','Kesimpulan'];
+
+function initLearn(){
+  currentLearnSlide = 0;
+  renderLearnSlide();
+}
+function renderLearnSlide(){
+  const s = learnSlides[currentLearnSlide];
+  document.getElementById('learn-title').textContent = s.title;
+  document.getElementById('learn-body').textContent = s.body;
+  document.getElementById('learn-code').innerHTML = s.code;
+  document.getElementById('learn-explain').textContent = s.explain;
+  document.getElementById('materi-count').textContent = (currentLearnSlide+1)+' / '+learnSlides.length;
+  renderMateriList();
+  renderLearnDots();
+  const prevBtn = document.getElementById('btn-prev-learn');
+  const nextBtn = document.getElementById('btn-next-learn');
+  prevBtn.disabled = currentLearnSlide===0;
+  prevBtn.style.opacity = currentLearnSlide===0?'0.4':'1';
+  nextBtn.textContent = currentLearnSlide===learnSlides.length-1?'Selesai ✓':'Selanjutnya →';
+  nextBtn.disabled = currentLearnSlide===learnSlides.length-1;
+  nextBtn.style.opacity = currentLearnSlide===learnSlides.length-1?'0.4':'1';
+}
+function renderMateriList(){
+  const list = document.getElementById('materi-list');
+  list.innerHTML = learnSlides.map((s,i)=>`<div class="materi-item ${i===currentLearnSlide?'active':''} ${i<currentLearnSlide?'done-m':''}" onclick="gotoLearn(${i})"><div class="materi-num">${i+1}</div><span class="materi-name">${s.title}</span></div>`).join('');
+}
+function renderLearnDots(){
+  const dots = document.getElementById('learn-dots');
+  const total = learnSlides.length;
+  // Show max 5 dots with active in middle when possible
+  let start = Math.max(0, currentLearnSlide - 2);
+  let end = Math.min(total, start + 5);
+  if(end - start < 5) start = Math.max(0, end - 5);
+  dots.innerHTML = Array.from({length: end - start},(_,i)=>{
+    const idx = start + i;
+    return `<div class="dot ${idx===currentLearnSlide?'active':''}" onclick="gotoLearn(${idx})"></div>`;
+  }).join('');
+}
+function gotoLearn(i){
+  currentLearnSlide = Math.max(0, Math.min(i, learnSlides.length-1));
+  renderLearnSlide();
+}
+function navigateLearn(dir){
+  if(dir===1 && currentLearnSlide < learnSlides.length-1){
+    currentLearnSlide++;
+    addXP(10,'📖 +10 XP dari belajar!');
+    if(currentLearnSlide===learnSlides.length-1) setTimeout(()=>showToast('🎉 Level 2 selesai! +200 XP bonus','success'),400);
+  } else if(dir===-1 && currentLearnSlide>0){
+    currentLearnSlide--;
+  }
+  renderLearnSlide();
+}
+
+// ── QUIZ ──────────────────────────────────
+const quizData = [
+  {q:'Manakah yang termasuk tipe data string di Python?',opts:['A. 123','B. 12.5','C. "CodePlay"','D. True'],ans:2,explain:'"CodePlay" adalah string karena diapit tanda kutip. 123 adalah int, 12.5 adalah float, True adalah boolean.'},
+  {q:'Fungsi apa yang digunakan untuk menampilkan output di Python?',opts:['A. show()','B. display()','C. output()','D. print()'],ans:3,explain:'print() adalah fungsi bawaan Python untuk menampilkan teks/nilai ke layar. Fungsi show(), display(), dan output() tidak ada di Python standar.'},
+  {q:'Bagaimana cara membuat komentar satu baris di Python?',opts:['A. // komentar','B. # komentar','C. /* komentar */','D. -- komentar'],ans:1,explain:'Python menggunakan tanda # untuk komentar satu baris. // digunakan di JavaScript/Java, /* */ di C/Java, dan -- di SQL/Lua.'},
+  {q:'Apa hasil dari 10 % 3 di Python?',opts:['A. 3','B. 3.33','C. 1','D. 0'],ans:2,explain:'Operator % adalah modulo (sisa pembagian). 10 dibagi 3 = 3 sisa 1. Jadi 10 % 3 = 1.'},
+  {q:'Bagaimana cara menerima input dari pengguna di Python?',opts:['A. get()','B. read()','C. input()','D. scan()'],ans:2,explain:'input() adalah fungsi bawaan Python untuk membaca masukan dari pengguna via keyboard. Semua nilai yang dikembalikan input() bertipe string.'},
+  {q:'Apa yang dilakukan fungsi int() pada kode berikut?\n x = int("42")',opts:['A. Mengubah 42 menjadi string','B. Mengubah "42" menjadi bilangan bulat','C. Mengecek apakah "42" adalah integer','D. Membuat variable baru bernama int'],ans:1,explain:'int() mengkonversi nilai ke tipe integer (bilangan bulat). int("42") mengubah string "42" menjadi angka 42 yang bisa dihitung.'},
+  {q:'Manakah cara penulisan f-string yang benar di Python?',opts:['A. "Halo, " + nama','B. f"Halo, {nama}"','C. "Halo, %s" % nama','D. "Halo, " & nama'],ans:1,explain:'f-string (format string) ditulis dengan prefix f sebelum tanda kutip, dan variabel ditempatkan dalam kurung kurawal {}. Ini cara paling modern dan mudah dibaca.'},
+  {q:'Apa hasil dari 2 ** 8 di Python?',opts:['A. 16','B. 64','C. 256','D. 512'],ans:2,explain:'Operator ** adalah pemangkatan. 2 ** 8 = 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = 256.'},
+  {q:'Variabel mana yang penamaannya TIDAK valid di Python?',opts:['A. nama_lengkap','B. _private','C. 2angka','D. camelCase'],ans:2,explain:'Variable tidak boleh diawali dengan angka. "2angka" tidak valid karena dimulai dengan angka 2. nama_lengkap, _private, dan camelCase semuanya valid.'},
+  {q:'Apa output dari: print(type(3.14))',opts:['A. float','B. <class "int">','C. <class "float">','D. number'],ans:2,explain:'type() mengembalikan tipe data dalam format <class "tipe">. Karena 3.14 adalah bilangan desimal, tipe datanya adalah float, sehingga outputnya <class "float">.'},
+];
+function renderQuiz(){
+  const q = quizData[currentQuizQ];
+  document.getElementById('quiz-num-label').textContent = `Soal ${currentQuizQ+1} dari ${quizData.length}`;
+  document.getElementById('quiz-question').textContent = q.q;
+  const pct = Math.round((Object.keys(quizAnswers).length/quizData.length)*100);
+  document.getElementById('quiz-pct').textContent = pct+'%';
+  document.getElementById('quiz-bar').style.width = pct+'%';
+  const answered = quizAnswers[currentQuizQ];
+  document.getElementById('quiz-options').innerHTML = q.opts.map((opt,i)=>{
+    let cls='';
+    if(answered!==undefined){
+      if(i===q.ans) cls='correct';
+      else if(i===answered&&i!==q.ans) cls='wrong';
+    } else if(answered===undefined) cls='';
+    return `<div class="option ${cls}" onclick="selectQuizOpt(${i})">${answered===undefined?`<div class="radio">${''}  </div>`:i===q.ans?`<div class="radio"><div class="radio-dot"></div></div>`:`<div class="radio">${i===answered?'<div class="radio-dot"></div>':''}</div>`}<span>${opt}</span></div>`;
+  }).join('');
+  const fb = document.getElementById('quiz-feedback');
+  if(answered!==undefined){
+    fb.className='quiz-feedback show '+(answered===q.ans?'feedback-ok':'feedback-fail');
+    fb.innerHTML = (answered===q.ans?'✓ <strong>Jawaban benar!</strong> +10 XP':'✗ <strong>Jawaban salah.</strong> Jawaban yang benar: '+q.opts[q.ans])+'<br><small style="opacity:.85;font-weight:400">'+q.explain+'</small>';
+  } else {
+    fb.className='quiz-feedback';fb.textContent='';
+  }
+  renderQuizList();
+  document.getElementById('quiz-next-btn').textContent = currentQuizQ===quizData.length-1?'Selesai →':'Selanjutnya →';
+}
+function selectQuizOpt(i){
+  if(quizAnswers[currentQuizQ]!==undefined) return;
+  quizAnswers[currentQuizQ]=i;
+  if(i===quizData[currentQuizQ].ans) addXP(10,'⭐ +10 XP jawaban benar!');
+  renderQuiz();
+}
+function quizNext(){
+  if(currentQuizQ<quizData.length-1){currentQuizQ++;renderQuiz();}
+  else {
+    const correct = Object.entries(quizAnswers).filter(([k,v])=>quizData[k].ans===v).length;
+    showToast(`Quiz selesai! ${correct}/${quizData.length} benar 🎉`,'success');
+    quizAnswers={};currentQuizQ=0;setTimeout(renderQuiz,200);
+  }
+}
+function quizPrev(){if(currentQuizQ>0){currentQuizQ--;renderQuiz();}}
+function renderQuizList(){
+  document.getElementById('quiz-list').innerHTML = quizData.map((q,i)=>{
+    const a=quizAnswers[i];
+    let cls='';
+    if(a!==undefined) cls = a===q.ans?'done-ok':'done-fail';
+    if(i===currentQuizQ) cls+=' active';
+    return `<div class="pq-item ${cls}" onclick="currentQuizQ=${i};renderQuiz()"><div class="pq-dot"></div>${q.q.substring(0,30)}...</div>`;
+  }).join('');
+}
+
+// ── CHALLENGE ─────────────────────────────
+const origCode = `n = int(input())\nfaktorial = 1\n\nfor i in range(1, n+1):\n    faktorial *= i\n\nprint(faktorial)`;
+function resetCode(){document.getElementById('code-editor').value=origCode;document.getElementById('output-box').textContent='Klik "Jalankan" untuk melihat output...';document.getElementById('output-box').style.color='#50FA7B';}
+function runCode(){
+  const code = document.getElementById('code-editor').value;
+  const ob = document.getElementById('output-box');
+  ob.style.color='#50FA7B';
+  if(code.includes('faktorial')&&code.includes('range')){
+    if(code.includes('n == 0')||code.includes('n==0')||code.includes('if n')){
+      ob.textContent='Input: 5 → Output: 120\nInput: 0 → Output: 1\nInput: 10 → Output: 3628800';
+      document.getElementById('tc2-status').className='test-status status-pass';document.getElementById('tc2-status').textContent='✓ Passed';
+      document.getElementById('tc-status').textContent='3 / 3 passed';document.getElementById('tc-status').style.color='#2E7D32';
+    } else {
+      ob.textContent='Input: 5 → Output: 120\nInput: 0 → Output: 0 (salah, harusnya 1)\nInput: 10 → Output: 3628800';
+      ob.style.color='#FF9800';
+    }
+  } else {ob.textContent='SyntaxError: Kode tidak valid';ob.style.color='#FF5555';}
+}
+function submitCode(){
+  const code = document.getElementById('code-editor').value;
+  if(code.includes('n == 0')||code.includes('n==0')){addXP(50,'⚡ +50 XP challenge selesai!');showToast('Challenge selesai! Semua test case passed ✓','success');}
+  else showToast('Masih ada test case yang gagal. Perbaiki kodenya!','error');
+}
+
+// ── LEADERBOARD ───────────────────────────
+const lbData = {
+  global:[{rank:1,name:'Dinda',level:'Level 4',xp:2500,col:'#E91E63'},{rank:2,name:'Budi',level:'Level 4',xp:2100,col:'#4CAF50'},{rank:3,name:'Arif',level:'Level 2',xp:1600,me:true,col:'#42A5F5'},{rank:4,name:'Sinta',level:'Level 3',xp:1450,col:'#AB47BC'},{rank:5,name:'Raka',level:'Level 2',xp:1200,col:'#FF7043'},{rank:6,name:'Maya',level:'Level 2',xp:1100,col:'#26C6DA'}],
+  teman:[{rank:1,name:'Budi',level:'Level 4',xp:2100,col:'#4CAF50'},{rank:2,name:'Arif',level:'Level 2',xp:1600,me:true,col:'#42A5F5'},{rank:3,name:'Raka',level:'Level 2',xp:1200,col:'#FF7043'},{rank:4,name:'Maya',level:'Level 2',xp:1100,col:'#26C6DA'}],
+  mingguan:[{rank:1,name:'Arif',level:'Level 2',xp:340,me:true,col:'#42A5F5'},{rank:2,name:'Sinta',level:'Level 3',xp:310,col:'#AB47BC'},{rank:3,name:'Budi',level:'Level 4',xp:280,col:'#4CAF50'},{rank:4,name:'Dinda',level:'Level 4',xp:260,col:'#E91E63'},{rank:5,name:'Maya',level:'Level 2',xp:195,col:'#26C6DA'}],
+};
+function renderLeaderboard(tab){
+  const data = lbData[tab]||lbData.global;
+  const rankClass = r=>['','rank-1','rank-2','rank-3'][r]||'rank-n';
+  document.getElementById('lb-table-wrap').innerHTML=`<table class="lb-table"><thead><tr><th>Peringkat</th><th>Pengguna</th><th>Level</th><th>XP</th></tr></thead><tbody>${data.map(u=>`<tr class="${u.me?'me':''}"><td><div class="rank-badge ${rankClass(u.rank)}">${u.rank}</div></td><td><div class="lb-user"><div class="lb-avatar" style="background:linear-gradient(135deg,${u.col},${u.col}99)">${u.name.substring(0,2)}</div><span class="lb-name ${u.me?'me':''}">${u.name}${u.me?' (Anda)':''}</span></div></td><td style="color:${u.me?'var(--blue)':'var(--text2)'};font-size:13px;font-weight:${u.me?'700':'400'}">${u.level}</td><td><span class="lb-xp" style="color:${u.me?'var(--blue)':'var(--text)'}">${u.xp} XP</span></td></tr>`).join('')}</tbody></table>`;
+}
+function switchLBTab(el,tab){document.querySelectorAll('.lb-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderLeaderboard(tab);}
+
+// ── PENCAPAIAN ────────────────────────────
+const achUnlocked=[{icon:'✅',bg:'#E8F5E9',name:'First Steps',desc:'Selesaikan learning card pertama'},{icon:'⭐',bg:'#FFF8E1',name:'Quiz Master',desc:'Selesaikan 5 quiz dengan benar'},{icon:'💻',bg:'#E3F2FD',name:'Code Explorer',desc:'Selesaikan 10 learning card'},{icon:'🔥',bg:'#FFF3E0',name:'7 Days Streak',desc:'Belajar 7 hari berturut-turut'}];
+const achLocked=[{icon:'⚡',name:'Challenge Accepted',desc:'Selesaikan 5 challenge coding',prog:20,current:1,total:5},{icon:'🆙',name:'Level Up',desc:'Capai Level 3',prog:66,current:2,total:3},{icon:'⚔️',name:'Code Warrior',desc:'Selesaikan 30 challenge coding',prog:3,current:1,total:30},{icon:'💯',name:'Perfect Score',desc:'Dapatkan 100% di 3 quiz',prog:0,current:0,total:3},{icon:'🏆',name:'Top 1 Global',desc:'Raih peringkat 1 global',prog:10,current:0,total:1}];
+function renderPencapaian(tab){
+  const showLocked = tab==='semua'||tab==='terkunci';
+  const showUnlocked = tab==='semua';
+  document.getElementById('ach-unlocked').innerHTML = showUnlocked?achUnlocked.map(a=>`<div class="ach-card" onclick="showToast('Achievement: ${a.name}','success')"><div class="ach-icon-big" style="background:${a.bg}">${a.icon}</div><h4>${a.name}</h4><p>${a.desc}</p></div>`).join(''):'';
+  document.getElementById('ach-locked-title').style.display=showLocked?'block':'none';
+  document.getElementById('ach-locked').innerHTML = showLocked?achLocked.map(a=>`<div class="ach-card locked"><div class="ach-icon-big" style="background:#F5F5F5">${a.icon}</div><h4>${a.name}</h4><p>${a.desc}</p><div class="ach-mini-bar"><div class="ach-mini-fill" style="width:${a.prog}%"></div></div><div class="ach-count">${a.current} / ${a.total}</div></div>`).join(''):'';
+}
+function switchPencTab(el,tab){document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderPencapaian(tab);}
+
+// ── TOKO ──────────────────────────────────
+const shopItems = {
+  item:[{icon:'🥷',name:'Avatar Ninja',desc:'Ubah avatar kamu menjadi ninja!',price:500},{icon:'🌙',name:'Tema Dark',desc:'Ubah tampilan menjadi mode gelap.',price:300},{icon:'🤖',name:'Pet Robot',desc:'Robot kecil yang menemanimu belajar!',price:800},{icon:'🎊',name:'Effect Confetti',desc:'Tampilan confetti saat level up!',price:200},{icon:'🛡️',name:'Shield Protector',desc:'Melindungi streak kamu dari terputus.',price:1000},{icon:'🎨',name:'Custom Frame',desc:'Frame profil eksklusif.',price:600},{icon:'🎭',name:'Avatar Astronot',desc:'Jelajahi coding seperti astronot!',price:700},{icon:'✨',name:'Sparkle Effect',desc:'Efek kilauan saat XP bertambah.',price:250}],
+  boost:[{icon:'2️⃣✖️',name:'Double XP (1 Hari)',desc:'Dapatkan 2x XP selama 1 hari.',price:700},{icon:'💡',name:'Hint Plus',desc:'Dapatkan 5 hint tambahan.',price:400},{icon:'⏩',name:'Skip Challenge',desc:'Lewati 1 challenge yang sulit.',price:300},{icon:'⏰',name:'Time Freeze',desc:'Tambah 30 menit waktu quiz.',price:350},{icon:'🎯',name:'XP Boost (3 Hari)',desc:'2x XP selama 3 hari penuh.',price:1800},{icon:'🔋',name:'Energy Boost',desc:'Selesaikan 3 materi tanpa batas waktu.',price:500}],
+  paket:[{icon:'🥉',name:'Starter Pack',desc:'Double XP 3 hari + 3 Hint + Shield',price:1200},{icon:'🥇',name:'Champion Pack',desc:'Double XP 7 hari + 10 Hint + 3 Skip',price:2500},{icon:'🚀',name:'Pro Pack',desc:'Semua boost selama 14 hari.',price:4500},{icon:'💎',name:'Legend Pack',desc:'Semua boost + item eksklusif.',price:7999}],
+};
+function renderShop(tab){
+  currentShopTab=tab;
+  const items = shopItems[tab]||shopItems.item;
+  document.getElementById('shop-grid').innerHTML = items.map((item,i)=>{
+    const key=tab+'_'+i;
+    const owned=ownedItems.has(key);
+    return `<div class="shop-item ${owned?'owned':''}" onclick="openBuyModal('${item.icon}','${item.name}','${item.desc}',${item.price},'${key}')"><div class="shop-item-icon">${item.icon}</div><h4>${item.name}</h4><p>${item.desc}</p><div class="shop-price">${owned?'✓ Dimiliki':'⭐ '+item.price.toLocaleString()+' XP'}</div></div>`;
+  }).join('');
+}
+function switchShopTab(el,tab){document.querySelectorAll('.shop-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderShop(tab);}
+function openBuyModal(icon,name,desc,price,key){
+  if(ownedItems.has(key)){showToast('Item ini sudah kamu miliki!','info');return;}
+  currentBuyItem={icon,name,desc,price,key};
+  document.getElementById('buy-icon').textContent=icon;
+  document.getElementById('buy-name').textContent=name;
+  document.getElementById('buy-desc').textContent=desc;
+  document.getElementById('buy-price').textContent='⭐ '+price.toLocaleString()+' XP';
+  document.getElementById('buy-balance').textContent=userXP.toLocaleString()+' XP';
+  document.getElementById('buy-confirm-btn').disabled=userXP<price;
+  document.getElementById('buy-confirm-btn').style.opacity=userXP<price?'0.5':'1';
+  openModal('modal-buy');
+}
+function confirmBuy(){
+  if(!currentBuyItem) return;
+  if(userXP<currentBuyItem.price){showToast('XP tidak cukup!','error');return;}
+  userXP-=currentBuyItem.price;
+  ownedItems.add(currentBuyItem.key);
+  updateXPDisplay();
+  closeModal('modal-buy');
+  showToast(currentBuyItem.icon+' '+currentBuyItem.name+' berhasil dibeli!','success');
+  renderShop(currentShopTab);
+}
+
+// ── SETTINGS ──────────────────────────────
+function switchSettingsTab(el,tab){
+  document.querySelectorAll('.settings-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.settings-content').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('settings-'+tab).classList.add('active');
+}
+function toggleEditProfile(){
+  editingProfile=!editingProfile;
+  ['f-nama','f-email','f-username'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(editingProfile){el.removeAttribute('readonly');el.classList.add('editable');}
+    else{el.setAttribute('readonly','');el.classList.remove('editable');}
+  });
+  document.getElementById('btn-edit-profile').textContent=editingProfile?'Batal':'Ubah Profil';
+  document.getElementById('btn-save-profile').style.display=editingProfile?'block':'none';
+}
+function saveProfile(){
+  const nama=document.getElementById('f-nama').value;
+  document.querySelector('.user-info .name').textContent=nama;
+  toggleEditProfile();
+  showToast('Profil berhasil disimpan!','success');
+}
+function savePassword(){
+  const cur=document.getElementById('pw-current').value;
+  const nw=document.getElementById('pw-new').value;
+  const cf=document.getElementById('pw-confirm').value;
+  if(!cur||!nw||!cf){showToast('Semua field harus diisi!','error');return;}
+  if(nw!==cf){showToast('Password baru tidak cocok!','error');return;}
+  if(nw.length<6){showToast('Password minimal 6 karakter!','error');return;}
+  ['pw-current','pw-new','pw-confirm'].forEach(id=>document.getElementById(id).value='');
+  showToast('Password berhasil diubah!','success');
+}
+function selectTheme(el,theme){
+  document.querySelectorAll('.theme-item').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  showToast('Tema '+theme+' diterapkan!','success');
+}
+
+// ── PAYMENT MODAL ─────────────────────────
+let currentPayMethod = 'Kartu Kredit/Debit';
+let promoApplied = false;
+let payPriceUSD = 9.99;
+
+function openPaymentModal(plan){
+  selectedPlanData = plan;
+  payPriceUSD = parseFloat(plan.price.replace('$',''));
+  promoApplied = false;
+  document.getElementById('pay-plan-name').textContent = plan.name;
+  document.getElementById('pay-plan-price').textContent = plan.price+'/'+plan.period;
+  document.getElementById('pay-subtotal').textContent = plan.price;
+  document.getElementById('pay-total').textContent = plan.price;
+  document.getElementById('pay-discount-row').style.display='none';
+  document.getElementById('pay-plan-features').innerHTML = plan.features.map(f=>`<div style="font-size:12px;color:#2E7D32;margin-bottom:3px;">✓ ${f}</div>`).join('');
+  document.getElementById('promo-input').value='';
+  goPayStep(1);
+  openModal('modal-payment');
+}
+function goPayStep(step){
+  [1,2,3,4].forEach(s=>document.getElementById('pay-step-'+s).style.display='none');
+  document.getElementById('pay-step-'+step).style.display='block';
+  if(step===3){
+    setTimeout(()=>goPayStep(4), 2500);
+    // set success details
+    const txId = 'TRX-'+Date.now().toString().slice(-8);
+    const expire = new Date(); expire.setMonth(expire.getMonth()+1);
+    document.getElementById('tx-id').textContent = txId;
+    document.getElementById('tx-plan').textContent = selectedPlanData?selectedPlanData.name:'Pro Plan';
+    document.getElementById('tx-amount').textContent = document.getElementById('pay-total').textContent;
+    document.getElementById('tx-expire').textContent = expire.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('success-plan-name').textContent = selectedPlanData?(selectedPlanData.name.includes('Pro')?'PRO':'Basic'):'PRO';
+  }
+}
+function selectPayMethod(el, method){
+  currentPayMethod = method;
+  document.querySelectorAll('.pay-method').forEach(m=>m.classList.remove('active'));
+  el.classList.add('active');
+  // Show/hide appropriate form
+  document.getElementById('pay-form-card').style.display='none';
+  document.getElementById('pay-form-ewallet').style.display='none';
+  document.getElementById('pay-form-bank').style.display='none';
+  document.getElementById('pay-form-mini').style.display='none';
+  if(method==='Kartu Kredit/Debit') document.getElementById('pay-form-card').style.display='block';
+  else if(['GoPay','OVO','DANA'].includes(method)){
+    document.getElementById('pay-form-ewallet').style.display='block';
+    document.getElementById('ewallet-name').textContent=method;
+  } else if(method==='Transfer Bank') document.getElementById('pay-form-bank').style.display='block';
+  else if(method==='Alfamart/Indomaret') document.getElementById('pay-form-mini').style.display='block';
+}
+function formatCardNumber(el){
+  let v = el.value.replace(/\D/g,'').substring(0,16);
+  el.value = v.match(/.{1,4}/g)?.join(' ')||v;
+}
+function formatExpiry(el){
+  let v = el.value.replace(/\D/g,'').substring(0,4);
+  if(v.length>=2) v = v.substring(0,2)+'/'+v.substring(2);
+  el.value = v;
+}
+function applyPromo(){
+  const code = document.getElementById('promo-input').value.trim().toUpperCase();
+  if(promoApplied){showToast('Promo sudah diterapkan!','info');return;}
+  const promos = {'CODEPLAY20':0.20,'BELAJAR10':0.10,'NEWUSER15':0.15,'DISKON25':0.25};
+  if(promos[code]){
+    const disc = payPriceUSD * promos[code];
+    const final = payPriceUSD - disc;
+    document.getElementById('pay-discount').textContent = '-$'+disc.toFixed(2);
+    document.getElementById('pay-total').textContent = '$'+final.toFixed(2);
+    document.getElementById('pay-discount-row').style.display='flex';
+    promoApplied = true;
+    showToast(`Promo ${code} berhasil! Diskon ${Math.round(promos[code]*100)}% 🎉`,'success');
+  } else {
+    showToast('Kode promo tidak valid atau sudah kadaluarsa','error');
+  }
+}
+
+// ── XP SYSTEM ─────────────────────────────
+function addXP(amount, msg){
+  userXP+=amount;
+  updateXPDisplay();
+  if(msg) showToast(msg,'success');
+}
+function updateXPDisplay(){
+  document.getElementById('xp-count').textContent=userXP.toLocaleString();
+  document.getElementById('sum-xp').textContent=userXP.toLocaleString();
+  document.getElementById('toko-xp').textContent=userXP.toLocaleString();
+}
+
+// ── INIT ──────────────────────────────────
+initLearn();
+renderQuiz();
+renderLeaderboard('global');
+renderPencapaian('semua');
+renderShop('item');
+</script>
+</body>
+</html>
